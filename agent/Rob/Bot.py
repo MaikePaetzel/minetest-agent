@@ -5,9 +5,11 @@ import configparser
 
 
 
-class NpcController :
+class BotController :
     """
-    MineyNpc - Initializing mt
+    This class registers a bot object with the game
+    and takes care of controlling it via atomic actions.
+    MineyNpc - initializing minetest
     @param? ip : server address, local by default
     @param? port : server port, default 29999
     @param? username : default "RobController"
@@ -15,18 +17,16 @@ class NpcController :
 
     """
 
+    CONFIG_PATH = 'Rob/newnpc.conf'
+
     def __init__(self, IP="127.0.0.1",port="29999", username="RobController", password="123456789"):
         self.mt = miney.Minetest()
         self.lua_runner = miney.Lua(self.mt)
         self.brain = None
-        # Probabliy iterate over all the npc's that exist and have a list of them
+        # TODO: iterate over all the npc's that exist and have a list of them
 
-    def send_lua(self,cmd):
-        return self.lua_runner.run(cmd)
-
-    def create_npc(self):
         config = configparser.ConfigParser()
-        config.read('Rob/newnpc.conf')
+        config.read(CONFIG_PATH)
         print(config.sections())
         config = config['NPC']
 
@@ -47,8 +47,7 @@ class NpcController :
         modname = config['MOD_NAME']
         ownername = config['OWNER_NAME']
 
-        add_npc = f"""
-
+        add_npc = """
         local ref = {{
             id = "{_id}",
             pos = vector.new{pos_vector},
@@ -57,11 +56,9 @@ class NpcController :
             owner = "{ownername}",
         }}
         npcf:add_npc(ref)
-
         """
-        # time.sleep(3)
 
-        # Testing if rob already exist 
+        # testing if rob already exists
         test_rob = """
         local e = npcf:get_luaentity( \"""" + _id + """\" )
             if e then
@@ -74,8 +71,10 @@ class NpcController :
             print(self.send_lua(add_npc))
             time.sleep(10)
         else :
-            print("NPC already init")
-        
+            print("bot is initialized")
+
+    def send_lua(self,cmd):
+        return self.lua_runner.run(cmd)
 
     def init_rob_brain(self):
         self.brain = RobBrain()

@@ -1,7 +1,7 @@
 import time
 class Action:
     """
-    Action represent a task that the npc will have to do
+    This class represents atomic actions that a bot is able to execute.
     """
     def __init__(self, code, cancel, goal):
         self.code = code

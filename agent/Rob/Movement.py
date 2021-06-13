@@ -4,15 +4,18 @@ import datetime
 class AtomicAction :
     def __init__(self, lua_runner, npc_id):
         self.lua_runner = lua_runner
-        self.npc_id = npc_id
+        self.base_cmd = """
+        local npc = npcf:get_luaentity(\"""" + npc_id + """\")
+        local move_obj = npcf.movement.getControl(npc)
+        """
 
 
     def build_lua(self, command):
         """
-        The command will execute the command between :
-            - The initializing part (access to the npc)
-            - Executiong the command
-            - closing the access 
+        A command consists of:
+            - initialization (access to the npc)
+            - executing the command
+            - closing the access
 
         Name of variables : 
             - npc -> npc entity variables
@@ -20,14 +23,10 @@ class AtomicAction :
         ---------------------------------------------------
         """
         print(f'Lua command executed at {datetime.datetime.now()}')
-        cmd = """
-    local npc = npcf:get_luaentity(\"""" + self.npc_id + """\")
-    local move_obj = npcf.movement.getControl(npc)
-        """
-        cmd = cmd + command
+        
+        cmd = self.base_cmd + command
         print (cmd)
         return self.lua_runner(cmd)
-
 
 
     def move_to(self, x,y,z):
@@ -36,48 +35,47 @@ class AtomicAction :
 
             p = '{x='+ str(x) +', y='+ str(y) +', z='+str(z)+'}'
             cmd = """
-    local player = minetest.get_player_by_name(npc.owner)
-    move_obj:walk(""" + str(p) + """,2)
+            local player = minetest.get_player_by_name(npc.owner)
+            move_obj:walk(""" + str(p) + """,2)
             """
             return self.build_lua(cmd)
 
         def cancelInnerFunction(parent_action):
             
             cmd = """
-
-    if move_obj._path == nil then
-        return true
-    else
-        return false
-    end
+            if move_obj._path == nil then
+                return true
+            else
+                return false
+            end
             """
             ret = self.build_lua(cmd)
             return ret
 
 
         def on_cancelInnerFunction(parent_action):
-            print('The walk have been canceld')
+            print('The action has been canceled')
         
         def goalInnerFunction(parent_action):
             p = '{x='+ str(x) +', y='+ str(y) +', z='+str(z)+'}'
-            cmd = f"""
-    p = vector.round({p})
-    n = vector.round(move_obj.pos) 
+            cmd = """
+            p = vector.round({p})
+            n = vector.round(move_obj.pos) 
 
-    d = (p.y - n.y) * (p.y - n.y)
+            d = (p.y - n.y) * (p.y - n.y)
 
-    if p.x == n.x and d < 3 and p.z == n.z  then
-        return true
-    else
-        return false
-    end
+            if p.x == n.x and d < 3 and p.z == n.z  then
+                return true
+            else
+                return false
+            end
             """
             ret= self.build_lua(cmd)
             return ret
 
 
         def on_goalInnerFunction(parent_action):
-            print('The goal have beean reached')
+            print('The goal has been reached')
 
         a = Action(codeInnerFunction, cancelInnerFunction, goalInnerFunction)
         a.set_on_cancel(on_cancelInnerFunction)

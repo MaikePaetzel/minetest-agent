@@ -2,25 +2,21 @@ from Rob import Action
 import threading
 import time
 
-class RobBrain :
+class DummyInterpreter :
     """
-        Desciption :
+        Description :
         ----------
-        Dummy brain of the NPC, will just execute the action that we gave to the stack
-        Manage action to provide sequence task management.
+        This provisionary class builds scripted behaviours out of atomic actions.
+        It is merely a test instance.
 
         Attributes :
         ----------
         stack : list 
-            Stack of Action
+            stack of actions
         active : Action
-            Current Action
+            current action
         pause : float
-            Thread waiting time
-
-        WARNING
-        ----------
-        Thread unsing, might be dangerous (infinite loop etc) + performance issues
+            thread waiting time
 
     """
 
@@ -37,8 +33,7 @@ class RobBrain :
 
     def loop(self):
         """
-            This function will create an infinite loop (have to be used threaded, at least imagined this way)
-            that will execute part "code" of an "Action"
+            This function will take care of the 
 
         """
         print('Starting infinite loop -> Ctrl-C to Cancel...\n')
