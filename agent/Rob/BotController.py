@@ -1,11 +1,10 @@
 import miney
-from Rob.RobBrain import RobBrain
+import threading
 import time
+from enum import Enum
 import configparser
 
-
-
-class BotController :
+class BotController:
     """
     This class registers a bot object with the game
     and takes care of controlling it via atomic actions.
@@ -17,22 +16,25 @@ class BotController :
 
     """
 
+    class State(Enum):
+        NOEXIST = 0
+        IDLE = 1
+        RUNNING = 2
+
     CONFIG_PATH = 'Rob/newnpc.conf'
 
-    def __init__(self, IP="127.0.0.1",port="29999", username="RobController", password="123456789"):
+    def __init__(self, IP="127.0.0.1",port="29999", username="RobController", password="123456789", brain=DummyBrain()):
+        self.state = State.NOEXIST
         self.mt = miney.Minetest()
         self.lua_runner = miney.Lua(self.mt)
-        self.brain = None
-        # TODO: iterate over all the npc's that exist and have a list of them
+        self.brain = brain
 
         config = configparser.ConfigParser()
         config.read(CONFIG_PATH)
         print(config.sections())
         config = config['NPC']
 
-        playername = self.mt.player[0].name
         player = self.mt.player[0]
-
         _id = config['ID']
 
         self.id = _id
@@ -71,13 +73,38 @@ class BotController :
             print(self.send_lua(add_npc))
             time.sleep(10)
         else :
+            self.state = State.IDLE
             print("bot is initialized")
 
     def send_lua(self,cmd):
         return self.lua_runner.run(cmd)
+    
+    def start_execution(self):
+        #TODO: if State.NOEXIST raise error: "dont start a bot that doesn't exist"
+        self.state = State.RUNNING
 
-    def init_rob_brain(self):
-        self.brain = RobBrain()
+        while len(self.stack) > 0:
+            self.active = self.stack[-1]
+            if self.active.on_success:
+                self.active.on_success()
+
+            elif self.active.on_cancel:
+                self.active.on_cancel()
+        
+        self.state = State.IDLE
+
+    def add_action(self, action):
+        self.interpreter.append(action)
+
+    def stop_execution(self):
+        self.stack.clear()
+        self.state = State.IDLE
+
+    def skip_current_action(self):
+        self.stack.pop()
+        if self.active.on_cancel:
+                self.active.on_cancel()
+
 
 
 
