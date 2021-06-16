@@ -1,0 +1,24 @@
+version: "2.0"
+nlu:
+- intent: greet
+  examples: |
+    - hey
+    - hello
+    - hi
+- intent: ask_move_block
+  examples: |
+    - Can you move the [stone block](which_block) block?
+    - Can you put [this](which_block) block [there](position)?
+    - Can you move [that](which_block) block to [-210,10,-245](position)?
+    - can you move [this](which_block) block
+    - move it over [there](position)
+    - Can you move the [stone](which_block) block [here](position)?
+- intent: ask_come_here
+  examples: |
+    - Can you come [here](position)?
+    - Over [here](position)!
+    - Can you come [here](position)?
+- intent: ask_bot_stop_action
+  examples: |
+    - stop
+    - stop what you are doing

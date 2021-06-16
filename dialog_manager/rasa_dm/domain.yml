@@ -1,0 +1,47 @@
+version: '2.0'
+session_config:
+  session_expiration_time: 60
+  carry_over_slots_to_new_session: true
+intents:
+- ask_come_here
+- ask_move_block
+- greet
+- ask_bot_stop_action
+- inform
+entities:
+- position
+- which_block
+slots:
+  position:
+    type: text
+    influence_conversation: false
+  which_block:
+    type: text
+    influence_conversation: false
+responses:
+  utter_greet:
+  - text: Hello
+  - text: Hey!
+  utter_ask_position:
+  - text: Where should I move this block?
+  utter_ask_which_block:
+  - text: Which block should I move?
+actions:
+- action_send_bot_brain
+- utter_ask_position
+- utter_ask_which_block
+- utter_greet
+forms:
+  move_block_form:
+    required_slots:
+      position:
+      - type: from_entity
+        entity: position
+      which_block:
+      - type: from_entity
+        entity: which_block
+  come_here_form:
+    required_slots:
+      position:
+      - type: from_entity
+        entity: position

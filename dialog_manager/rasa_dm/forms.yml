@@ -1,0 +1,22 @@
+version: "2.0"
+rules:
+- rule: Activate move block form
+  steps:
+  - intent: ask_move_block
+  - action: move_block_form
+  - active_loop: move_block_form
+- rule: Activate move block form
+  steps:
+  - intent: ask_gather_resource
+  - action: gather_resource_form
+  - active_loop: gather_resource_form
+- rule: Activate move block form
+  steps:
+  - intent: ask_give_resource
+  - action: give_resource_form
+  - active_loop: give_resource_form
+- rule: Activate move here form
+  steps:
+  - intent: ask_come_here
+  - action: come_here_form
+  - active_loop: come_here_form
