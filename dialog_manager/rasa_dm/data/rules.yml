@@ -12,19 +12,11 @@ rules:
   - action: move_block_form
   - active_loop: null            # the form is no longer active because it has been filled
   - action: action_send_bot_brain
-- rule: Activate come here form
-  steps:
-  - intent: ask_come_here
-  - action: come_here_form
-  - active_loop: come_here_form
-- rule: Submit ask come here form
-  condition:
-  - active_loop: come_here_form
-  steps:
-  - action: come_here_form
-  - active_loop: null            # the form is no longer active because it has been filled
-  - action: action_send_bot_brain
 - rule: Stop bot action
   steps:
     - intent: ask_bot_stop_action
+    - action: action_send_bot_brain
+- rule: Ask come here
+  steps:
+    - intent: ask_come_here
     - action: action_send_bot_brain

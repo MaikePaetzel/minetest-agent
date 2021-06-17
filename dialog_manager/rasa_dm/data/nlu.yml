@@ -5,6 +5,8 @@ nlu:
     - hey
     - hello
     - hi
+    - Hey
+    - Hi
 - intent: ask_move_block
   examples: |
     - Can you move the [stone block](which_block) block?
@@ -12,12 +14,24 @@ nlu:
     - Can you move [that](which_block) block to [-210,10,-245](position)?
     - can you move [this](which_block) block
     - move it over [there](position)
-    - Can you move the [stone](which_block) block [here](position)?
+    - Can you move the [stone](which_block) block [there](position)?
 - intent: ask_come_here
   examples: |
-    - Can you come [here](position)?
-    - Over [here](position)!
-    - Can you come [here](position)?
+    - Can you come here?
+    - Can you come over here?
+    - Come!
+    - come
+    - Over here!
+    - Follow me!
+    - C'mere
+    - I'm here
+    - Join me over here
+    - Join me!
+    - Why don't you join me over here?
+    - Come to -110,10,250
+    - Come to where I am!
+    - Come here!
+    - Join me
 - intent: ask_bot_stop_action
   examples: |
     - stop

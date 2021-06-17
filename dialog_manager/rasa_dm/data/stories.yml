@@ -84,33 +84,6 @@ version: "2.0"
 
 - story: interactive_story_1
   steps:
-  - intent: ask_come_here
-    entities:
-    - position: here
-  - slot_was_set:
-    - position: here
-  - action: action_send_bot_brain
-
-- story: interactive_story_1
-  steps:
-  - intent: ask_come_here
-    entities:
-    - position: here
-  - slot_was_set:
-    - position: here
-  - action: come_here_form
-  - active_loop: come_here_form
-  - slot_was_set:
-    - position: here
-  - slot_was_set:
-    - position: here
-  - slot_was_set:
-    - requested_slot: null
-  - active_loop: null
-  - action: action_send_bot_brain
-
-- story: interactive_story_1
-  steps:
   - intent: ask_move_block
     entities:
     - which_block: stone
@@ -132,39 +105,34 @@ version: "2.0"
   - slot_was_set:
     - requested_slot: null
   - active_loop: null
+- story: interactive_story_1
+  steps:
+  - intent: ask_come_here
+  - action: action_send_bot_brain
+  - slot_was_set:
+    - player_position: player_position
+
+- story: interactive_story_1
+  steps:
+  - intent: greet
+  - action: utter_greet
+  - intent: ask_come_here
+  - action: action_send_bot_brain
+  - slot_was_set:
+    - player_position: player_position
+
+- story: interactive_story_1
+  steps:
+  - intent: greet
+  - action: utter_greet
+  - intent: ask_come_here
+  - action: action_send_bot_brain
+  - slot_was_set:
+    - player_position: player_position
 
 - story: interactive_story_1
   steps:
   - intent: ask_come_here
-    entities:
-    - position: here
-  - slot_was_set:
-    - position: here
-  - action: come_here_form
-  - active_loop: come_here_form
-  - slot_was_set:
-    - position: here
-  - slot_was_set:
-    - position: here
-  - slot_was_set:
-    - requested_slot: null
-  - active_loop: null
   - action: action_send_bot_brain
-
-- story: interactive_story_1
-  steps:
-  - intent: ask_come_here
-    entities:
-    - position: here
   - slot_was_set:
-    - position: here
-  - action: come_here_form
-  - active_loop: come_here_form
-  - slot_was_set:
-    - position: here
-  - slot_was_set:
-    - position: here
-  - slot_was_set:
-    - requested_slot: null
-  - active_loop: null
-  - action: action_send_bot_brain
+    - player_position: player_position

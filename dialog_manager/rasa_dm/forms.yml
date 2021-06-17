@@ -15,8 +15,3 @@ rules:
   - intent: ask_give_resource
   - action: give_resource_form
   - active_loop: give_resource_form
-- rule: Activate move here form
-  steps:
-  - intent: ask_come_here
-  - action: come_here_form
-  - active_loop: come_here_form

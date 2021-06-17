@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from typing import Any, Text, Dict, List
 
 from rasa_sdk import Action, Tracker
+from rasa_sdk.events import SlotSet
 from rasa_sdk.executor import CollectingDispatcher
 
 
@@ -57,10 +58,12 @@ class ActionSendBotBrain(Action):
         
         if tracker.get_intent_of_latest_message() == "ask_come_here":
             bot_action = ComeHere(
-                tracker.get_slot("position")
+                "player_position"
             )
             dispatcher.utter_message(text="Okay, I'll come to where you are.")
             self.bot_brain.send_action(bot_action)
+
+            return [SlotSet("player_position", "player_position")]
             
 
         if tracker.get_intent_of_latest_message() == "ask_bot_stop_action":
