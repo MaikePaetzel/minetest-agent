@@ -7,7 +7,7 @@ from rasa_sdk.executor import CollectingDispatcher
 
 
 class BotBrain:
-    # dummy class
+    # dummy class as a stand-in for the brain implementation
     def send_action(self, action):
         print(f"bot brain received action {action}")
 
@@ -55,14 +55,19 @@ class ActionSendBotBrain(Action):
             )
             dispatcher.utter_message(text="I will move the block")
             self.bot_brain.send_action(bot_action)
+
+
         
         if tracker.get_intent_of_latest_message() == "ask_come_here":
             bot_action = ComeHere(
                 "player_position"
             )
             dispatcher.utter_message(text="Okay, I'll come to where you are.")
+
+            # make call to the brain
             self.bot_brain.send_action(bot_action)
 
+            # set the slot for rasa to be able to track it
             return [SlotSet("player_position", "player_position")]
             
 
