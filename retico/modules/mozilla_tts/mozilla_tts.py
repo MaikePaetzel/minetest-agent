@@ -7,7 +7,7 @@ from TTS.utils.manage import ModelManager
 from TTS.utils.synthesizer import Synthesizer
 
 
-class TTS(abstract.AbstractModule):
+class MozillaTTS(abstract.AbstractModule):
     @staticmethod
     def name():
         return "TransformerTTS Module"

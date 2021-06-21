@@ -1,28 +1,18 @@
+import logging
 import sys
-from retico.core.audio.io import MicrophoneModule
-from retico.core.debug.general import CallbackModule
-from retico.core.audio.io import MicrophoneModule, AudioDispatcherModule, StreamingSpeakerModule, SpeakerModule
-from retico.core.text.asr import TextDispatcherModule
 
-
-#from retico.modules.google.asr import GoogleASRModule
-#from retico.modules.google.tts import GoogleTTSModule
-from retico.modules.wavplayer.wavplayer import WavplayerModule
+from retico.core.audio.io import SpeakerModule
+from retico.dialogue.manager.rasa_http import RasaHTTP
 from retico.modules.huggingface.asr import HuggingfaceASRModule
 from retico.modules.mozilla_tts.mozilla_tts import MozillaTTS
-from retico.dialogue.manager.rasa_http import RasaHTTP
-from retico.modules.net.network import DelayedNetworkModule
-
-#from retico.modules.rasa.nlu import RasaNLUModule
-
-import logging
+from retico.modules.wavplayer.wavplayer import WavplayerModule
 
 
 def huggingface_asr():
     sound_files = [
-        "/home/nrg/datasets/text_audio_samples/hello.wav",
-        "/home/nrg/datasets/text_audio_samples/move_wooden_block.wav",
-        "/home/nrg/datasets/text_audio_samples/stop.wav",
+        "assets/audio/retico_test/hello.wav",
+        "assets/audio/retico_test/move_wooden_block.wav",
+        "assets/audio/retico_test/stop.wav",
     ]
     m1 = WavplayerModule(sound_files, 5)
     m11 = SpeakerModule(22050)
