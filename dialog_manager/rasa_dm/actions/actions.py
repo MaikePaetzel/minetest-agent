@@ -5,6 +5,11 @@ from rasa_sdk import Action, Tracker
 from rasa_sdk.events import SlotSet
 from rasa_sdk.executor import CollectingDispatcher
 
+import sys
+REPO_PATH = '/your/repo/path/minetest-agent/agent/rob'
+sys.path.append(REPO_PATH)
+import bot_brain as b
+
 
 class BotBrain:
     # dummy class as a stand-in for the brain implementation
@@ -38,6 +43,8 @@ class ActionSendBotBrain(Action):
     def __init__(self):
         super().__init__()
         self.bot_brain = BotBrain()
+        # TODO: replace Dummy
+        self.rob = b.DummyBrain()
 
     def name(self) -> Text:
         return "action_send_bot_brain"
@@ -59,13 +66,13 @@ class ActionSendBotBrain(Action):
 
         
         if tracker.get_intent_of_latest_message() == "ask_come_here":
-            bot_action = ComeHere(
+            request = ComeHere(
                 "player_position"
             )
             dispatcher.utter_message(text="Okay, I'll come to where you are.")
 
             # make call to the brain
-            self.bot_brain.send_action(bot_action)
+            self.rob.process(request)
 
             # set the slot for rasa to be able to track it
             return [SlotSet("player_position", "player_position")]
