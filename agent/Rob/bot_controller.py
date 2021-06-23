@@ -3,6 +3,12 @@ import threading
 import time
 from enum import Enum
 import configparser
+import atomic_actions as aa
+
+class State(Enum):
+    NOEXIST = 0
+    IDLE = 1
+    RUNNING = 2
 
 class BotController:
     """
@@ -13,31 +19,23 @@ class BotController:
     @param? port : server port, default 29999
     @param? username : default "RobController"
     @param? password : default "123456789"
+    """    
 
-    """
-
-    class State(Enum):
-        NOEXIST = 0
-        IDLE = 1
-        RUNNING = 2
-
-    CONFIG_PATH = 'Rob/newnpc.conf'
-
-    def __init__(self, IP="127.0.0.1",port="29999", username="RobController", password="123456789", brain=DummyBrain()):
+    def __init__(self, server="127.0.0.1", playername="RobController", password="123456789", port=29999):
         self.state = State.NOEXIST
-        self.mt = miney.Minetest()
+        self.stack = []
+        self.mt = miney.Minetest(server, playername, password, port)
         self.lua_runner = miney.Lua(self.mt)
-        self.brain = brain
 
+        CONFIG_PATH = '/your/repo/path/minetest-agent/agent/rob/newnpc.conf'
         config = configparser.ConfigParser()
         config.read(CONFIG_PATH)
-        print(config.sections())
         config = config['NPC']
 
         player = self.mt.player[0]
-        _id = config['ID']
-
-        self.id = _id
+        bot_id = config['ID']
+        
+        self.id = bot_id
         if config.getboolean('SPAWN_ON_PLAYER'):
             pos = player.position
             pos_vector = tuple([pos['x'], pos['y']+1, pos['z']])
@@ -49,64 +47,65 @@ class BotController:
         modname = config['MOD_NAME']
         ownername = config['OWNER_NAME']
 
-        add_npc = """
+        add_rob = f"""
+
         local ref = {{
-            id = "{_id}",
+            id = "{bot_id}",
             pos = vector.new{pos_vector},
             yaw = {yaw},
             name = "{modname}",
             owner = "{ownername}",
         }}
         npcf:add_npc(ref)
+
         """
 
         # testing if rob already exists
         test_rob = """
-        local e = npcf:get_luaentity( \"""" + _id + """\" )
+        local e = npcf:get_luaentity(\"""" + bot_id + """\")
             if e then
                 return true
             else
                 return false
             end
         """
-        if  not self.send_lua(test_rob) :
-            print(self.send_lua(add_npc))
-            time.sleep(10)
-        else :
-            self.state = State.IDLE
-            print("bot is initialized")
 
-    def send_lua(self,cmd):
-        return self.lua_runner.run(cmd)
-    
+        for i in range(3):
+            if self.lua_runner.run(test_rob):
+                self.state = State.IDLE
+                print("Rob is initialized")
+                break
+            print(str(i+1) + ". try to initialize Rob")
+            self.lua_runner.run(add_rob)
+            # TODO: sleep for max time or just await ingame result
+            time.sleep(10)
+        
+        if not self.lua_runner.run(test_rob):
+            # TODO: raise exceptions
+            print("Initializing Rob FAILED")
+        
     def start_execution(self):
-        #TODO: if State.NOEXIST raise error: "dont start a bot that doesn't exist"
+        # TODO: if State.NOEXIST raise error: "dont start a bot that doesn't exist"
         self.state = State.RUNNING
 
         while len(self.stack) > 0:
-            self.active = self.stack[-1]
-            if self.active.on_success:
-                self.active.on_success()
-
-            elif self.active.on_cancel:
-                self.active.on_cancel()
+            # TODO: if consecutive behaviour is desired
+            # we have to await for the action to be finished ingame
+            self.action = self.stack[-1]
+            self.action()
+            # pop only after the action is done
+            self.stack.pop()
         
         self.state = State.IDLE
 
     def add_action(self, action):
-        self.interpreter.append(action)
+        self.stack.append(action)
 
     def stop_execution(self):
+        # TODO: interrupt current ingame action
         self.stack.clear()
         self.state = State.IDLE
 
     def skip_current_action(self):
+        # TODO: interrupt current ingame action and continue with next
         self.stack.pop()
-        if self.active.on_cancel:
-                self.active.on_cancel()
-
-
-
-
-
-
