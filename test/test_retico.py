@@ -1,9 +1,16 @@
 import logging
 import sys
+import inspect
+import os.path
+
+currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+parentdir = os.path.dirname(currentdir)
+sys.path.insert(0, parentdir)
 
 from retico.core.audio.io import SpeakerModule
 from retico.dialogue.manager.rasa_http import RasaHTTP
 from retico.modules.huggingface.asr import HuggingfaceASRModule
+from retico.modules.gui_input.gui_input import GuiInputModule
 from retico.modules.mozilla_tts.mozilla_tts import MozillaTTS
 from retico.modules.wavplayer.wavplayer import WavplayerModule
 
@@ -16,7 +23,7 @@ def huggingface_asr():
     ]
     m1 = WavplayerModule(sound_files, 5)
     m11 = SpeakerModule(22050)
-    m2 = HuggingfaceASRModule() # en-US or de-DE or ....
+    m2 = HuggingfaceASRModule()
     #m3 = CallbackModule(callback=lambda x: print("%s: %s (%f) - %s" % ("CallbackModule", x.text, x.stability, x.final)))
     m4 = RasaHTTP()
     m5 = MozillaTTS()
@@ -64,7 +71,39 @@ def huggingface_asr():
     m7.stop()
 
 
+def gui_input():
+    m1 = GuiInputModule()
+    m2 = MozillaTTS()
+    m3 = SpeakerModule(m2.sample_rate)
+
+    m1.subscribe(m2)
+    m2.subscribe(m3)
+
+    m1.setup()
+    m2.setup()
+    m3.setup()
+
+    logging.info("All setup")
+
+    m1.run(run_setup=False)
+    m2.run(run_setup=False)
+    m3.run(run_setup=False)
+
+    input()
+
+    m1.stop()
+    m2.stop()
+    m3.stop()
+
+
 if __name__ == '__main__':
-    logging.basicConfig(level=logging.INFO)
+    logging.basicConfig(level=logging.DEBUG)
+    console = logging.StreamHandler()
+    console.setLevel(logging.INFO)
+    # add the handler to the root logger
+    logging.getLogger('').addHandler(console)
+    logging.info("logging setup")
     if sys.argv[1] == "huggingface_asr":
         huggingface_asr()
+    elif sys.argv[1] == "gui_input":
+        gui_input()

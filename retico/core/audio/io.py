@@ -9,8 +9,6 @@ import wave
 import pyaudio
 from retico.core import abstract
 from retico.core.audio.common import AudioIU, SpeechIU, DispatchedAudioIU
-import espeak
-espeak.init()
 
 
 

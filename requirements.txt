@@ -2,7 +2,9 @@ pyaudio~=0.2.11
 flexx~=0.8
 TTS==0.0.13.2
 librosa==0.8.0
-transformers==4.5.0
+transformers==4.5.1
 soundfile
 torch
--e ./retico
+torchaudio
+sentencepiece
+pysimplegui

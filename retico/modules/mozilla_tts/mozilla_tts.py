@@ -3,6 +3,7 @@ from pathlib import Path
 
 import numpy as np
 from retico.core import abstract, audio, text
+import TTS
 from TTS.utils.manage import ModelManager
 from TTS.utils.synthesizer import Synthesizer
 
@@ -18,7 +19,7 @@ class MozillaTTS(abstract.AbstractModule):
 
     @staticmethod
     def input_ius():
-        return [text.common.GeneratedTextIU]
+        return [text.common.GeneratedTextIU, text.common.TextIU]
 
     @staticmethod
     def output_iu():
@@ -32,9 +33,7 @@ class MozillaTTS(abstract.AbstractModule):
     def setup(self):
         model_name = "tts_models/en/ek1/tacotron2"
 
-        path = Path(
-            "/home/nrg/.pyenv/versions/3.7.10/envs/retico/lib/python3.7/site-packages/TTS/bin/../.models.json"
-        )
+        path = Path(TTS.__file__).parent / ".models.json"
         manager = ModelManager(path)
 
         model_path, config_path, model_item = manager.download_model(model_name)
@@ -42,6 +41,7 @@ class MozillaTTS(abstract.AbstractModule):
         vocoder_path, vocoder_config_path, _ = manager.download_model(vocoder_name)
 
         self.synthesizer = Synthesizer(model_path, config_path)
+        print("TTS setup")
 
     def generate(self, text):
         logging.info(f"generating speech for text {text}")
@@ -56,5 +56,6 @@ class MozillaTTS(abstract.AbstractModule):
         output_iu.set_audio(
             raw_audio, nframes, self.synthesizer.output_sample_rate, self.sample_width
         )
-        output_iu.dispatch = input_iu.dispatch
+        if hasattr(output_iu, "dispatch"):
+            output_iu.dispatch = input_iu.dispatch
         return output_iu
