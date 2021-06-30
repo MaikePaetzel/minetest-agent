@@ -71,7 +71,37 @@ def huggingface_asr():
     m7.stop()
 
 
-def gui_input():
+def rasa_gui_input():
+    m_input = GuiInputModule()
+    m_rasa = RasaHTTP()
+    m_tts = MozillaTTS()
+    m_speaker = SpeakerModule(m_tts.sample_rate)
+
+    m_input.subscribe(m_rasa)
+    m_rasa.subscribe(m_tts)
+    m_tts.subscribe(m_speaker)
+
+    m_input.setup()
+    m_rasa.setup()
+    m_tts.setup()
+    m_speaker.setup()
+
+    logging.info("All setup")
+
+    m_input.run(run_setup=False)
+    m_rasa.run(run_setup=False)
+    m_tts.run(run_setup=False)
+    m_speaker.run(run_setup=False)
+
+    input()
+
+    m_input.stop()
+    m_rasa.stop()
+    m_tts.stop()
+    m_speaker.stop()
+
+
+def gui_to_speaker():
     m1 = GuiInputModule()
     m2 = MozillaTTS()
     m3 = SpeakerModule(m2.sample_rate)
@@ -105,5 +135,5 @@ if __name__ == '__main__':
     logging.info("logging setup")
     if sys.argv[1] == "huggingface_asr":
         huggingface_asr()
-    elif sys.argv[1] == "gui_input":
-        gui_input()
+    elif sys.argv[1] == "rasa_gui_input":
+        rasa_gui_input()
