@@ -1,17 +1,6 @@
 version: "2.0"
 rules:
-- rule: Activate move block form
-  steps:
-  - intent: ask_move_block
-  - action: move_block_form
-  - active_loop: move_block_form
-- rule: Submit move block form
-  condition:
-  - active_loop: move_block_form
-  steps:
-  - action: move_block_form
-  - active_loop: null            # the form is no longer active because it has been filled
-  - action: action_send_bot_brain
+
 - rule: Stop bot action
   steps:
     - intent: ask_bot_stop_action
@@ -20,3 +9,17 @@ rules:
   steps:
     - intent: ask_come_here
     - action: action_send_bot_brain
+- rule: greet
+  steps:
+    - intent: greet
+    - action: utter_greet
+
+- rule: goodbye
+  steps:
+    - intent: goodbye
+    - action: utter_goodbye
+- rule: Ask the user to rephrase whenever they send a message with low NLU confidence
+  steps:
+  - intent: nlu_fallback
+  - action: utter_please_rephrase
+

@@ -7,6 +7,35 @@ nlu:
     - hi
     - Hey
     - Hi
+- intent: goodbye
+  examples: |
+    - cu
+    - good by
+    - cee you later
+    - good night
+    - bye
+    - goodbye
+    - have a nice day
+    - see you around
+    - bye bye
+    - see you later
+- intent: affirm
+  examples: |
+    - yes
+    - y
+    - indeed
+    - of course
+    - that sounds good
+    - correct
+- intent: deny
+  examples: |
+    - no
+    - n
+    - never
+    - I don't think so
+    - don't like that
+    - no way
+    - not really
 - intent: ask_move_block
   examples: |
     - Can you move the [stone block](which_block) block?
@@ -15,6 +44,12 @@ nlu:
     - can you move [this](which_block) block
     - move it over [there](position)
     - Can you move the [stone](which_block) block [there](position)?
+    - can you move the block
+    - the [stone](which_block) block
+    - to the left
+    - Can you move the block?
+    - The [wooden](which_block) block
+    - move it [here](position)
 - intent: ask_come_here
   examples: |
     - Can you come here?
@@ -36,3 +71,8 @@ nlu:
   examples: |
     - stop
     - stop what you are doing
+- intent: chitchat
+  examples: |
+    - sasakfj ajhhlsfsa jasjfsafs
+    - this should be a very not interpretable sentence for you
+    - ü

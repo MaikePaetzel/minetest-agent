@@ -1,138 +1,68 @@
 version: "2.0"
 
-- story: ask move block
-  steps:
-  - intent: ask_move_block
-    entities:
-    - position: position
-  - slot_was_set:
-    - which_block: which_block
-  - action: move_block_form
-  - active_loop: move_block_form
-  - slot_was_set:
-    - position: position
-  - slot_was_set:
-    - requested_slot: which_block
-  - slot_was_set:
-    - requested_slot: null
-  - active_loop: null
-  - action: action_send_bot_brain
-- story: interactive_story_1
+stories:
+
+- story: ask come here
   steps:
   - intent: greet
-  - intent: ask_move_block
-    entities:
-    - which_block: this
-  - slot_was_set:
-    - which_block: this
-  - action: move_block_form
-  - active_loop: move_block_form
-  - slot_was_set:
-    - which_block: this
-  - slot_was_set:
-    - which_block: this
-  - slot_was_set:
-    - requested_slot: position
-  - slot_was_set:
-    - position: here
-  - slot_was_set:
-    - position: here
-  - slot_was_set:
-    - requested_slot: null
-  - active_loop: null
+  - action: utter_greet
+  - intent: ask_come_here
   - action: action_send_bot_brain
+  - slot_was_set:
+    - player_position: player_position
 
-- story: interactive_story_1
-  steps:
-  - intent: ask_bot_stop_action
-  - action: action_send_bot_brain
-
-- story: interactive_story_1
+- story: greet and move block
   steps:
   - intent: greet
   - action: utter_greet
   - intent: ask_move_block
+  - action: utter_ask_which_block
+  - intent: ask_move_block
     entities:
-    - which_block: this
+    - which_block: stone
   - slot_was_set:
-    - which_block: this
-  - action: move_block_form
-  - active_loop: move_block_form
-  - slot_was_set:
-    - which_block: this
-  - slot_was_set:
-    - which_block: this
-  - slot_was_set:
-    - requested_slot: position
-  - slot_was_set:
+    - which_block: stone
+  - action: utter_ask_position
+  - intent: ask_move_block
+    entities:
     - position: there
   - slot_was_set:
     - position: there
-  - slot_was_set:
-    - requested_slot: null
-  - active_loop: null
-  - action: action_send_bot_brain
-  - intent: ask_bot_stop_action
   - action: action_send_bot_brain
 
 - story: interactive_story_1
   steps:
   - intent: greet
   - action: utter_greet
-  - intent: ask_bot_stop_action
-  - action: action_send_bot_brain
-
-- story: interactive_story_1
-  steps:
+  - intent: ask_move_block
+  - action: utter_ask_which_block
   - intent: ask_move_block
     entities:
-    - which_block: stone
+    - which_block: wooden
+  - slot_was_set:
+    - which_block: wooden
+  - action: utter_ask_position
+  - intent: ask_move_block
+    entities:
     - position: here
   - slot_was_set:
     - position: here
-  - slot_was_set:
-    - which_block: stone
-  - action: move_block_form
-  - active_loop: move_block_form
-  - slot_was_set:
-    - position: here
-  - slot_was_set:
-    - which_block: stone
-  - slot_was_set:
-    - position: here
-  - slot_was_set:
-    - which_block: stone
-  - slot_was_set:
-    - requested_slot: null
-  - active_loop: null
-- story: interactive_story_1
-  steps:
-  - intent: ask_come_here
   - action: action_send_bot_brain
-  - slot_was_set:
-    - player_position: player_position
 
 - story: interactive_story_1
   steps:
   - intent: greet
   - action: utter_greet
-  - intent: ask_come_here
-  - action: action_send_bot_brain
-  - slot_was_set:
-    - player_position: player_position
+  - intent: chitchat
+  - action: utter_please_rephrase
+  - intent: goodbye
+  - action: utter_goodbye
 
 - story: interactive_story_1
   steps:
   - intent: greet
   - action: utter_greet
-  - intent: ask_come_here
-  - action: action_send_bot_brain
-  - slot_was_set:
-    - player_position: player_position
-
-- story: interactive_story_1
-  steps:
-  - intent: ask_come_here
-  - action: action_send_bot_brain
-  - slot_was_set:
-    - player_position: player_position
+  - intent: chitchat
+  - action: utter_please_rephrase
+  - intent: chitchat
+  - action: utter_please_rephrase
