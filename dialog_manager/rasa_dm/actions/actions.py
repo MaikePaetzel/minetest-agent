@@ -11,8 +11,9 @@ sys.path.append(REPO_PATH)
 import bot_brain as b
 
 
+
 class BotBrain:
-    # dummy class
+    # dummy class as a stand-in for the brain implementation
     def send_action(self, action):
         print(f"bot brain received action {action}")
 
@@ -55,22 +56,23 @@ class ActionSendBotBrain(Action):
 
         
         if tracker.get_intent_of_latest_message() == "ask_move_block":
-                
+        
             bot_action = MoveBlock(
                 tracker.get_slot("which_block"),
                 tracker.get_slot("position")
             )
-
+            
             if tracker.get_slot("which_block") and tracker.get_slot("position"):
                 dispatcher.utter_message(text="I will move the block")
             self.bot_brain.send_action(bot_action)
+
+
         
         if tracker.get_intent_of_latest_message() == "ask_come_here":
             request = ComeHere(
                 "player_position"
             )
             dispatcher.utter_message(text="Okay, I'll come to where you are.")
-            self.bot_brain.send_action(bot_action)
 
             # make call to the brain
             # self.rob.process(request)
@@ -84,5 +86,4 @@ class ActionSendBotBrain(Action):
             self.bot_brain.send_action(Stop())
 
         return []
-
 
