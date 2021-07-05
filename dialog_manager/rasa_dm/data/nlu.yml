@@ -76,3 +76,82 @@ nlu:
     - sasakfj ajhhlsfsa jasjfsafs
     - this should be a very not interpretable sentence for you
     - ü
+- intent: ask_move
+  examples: |
+    - go [back](relative_direction_move)
+    - go [back](relative_direction_move) to the [old tower](reference_object_move)
+    - go [forward](relative_direction_move)
+    - go [forward](relative_direction_move) for [two seconds](repeat_count_move)
+    - go [four steps](repeat_count_move) [forward](relative_direction_move) to the [new tower](reference_object_move)
+    - go [left](relative_direction_move)
+    - go [right](relative_direction_move)
+    - go [straight] for [eight seconds]
+    - go [straight](relative_direction_move)
+    - go [ten seconds](repeat_count_move) [forward](relative_direction_move)
+    - go to the [tower](reference_object_move)
+    - go [five steps](relative_direction_move) to the [right](relative_direction_move)
+    - go [six steps](relative_direction_move) to the [right](relative_direction_move)
+    - move [back](relative_direction_move)
+    - move [forward](relative_direction_move)
+    - move [four blocks](repeat_count_move) to the [right](relative_direction_move)
+    - move [four steps](repeat_count_move) [forward](relative_direction_move) to the [new tower](reference_object_move)
+    - move [four tiles](repeat_count_move) away from the [reference tower](reference_object_move)
+    - move [left](relative_direction_move)
+    - move [right](relative_direction_move)
+    - move [seven blocks](repeat_count_move) to the [right](relative_direction_move)
+    - move [six steps](repeat_count_move) away from [me](reference_object_move)
+    - take [six steps](repeat_count_move) [backward](relative_direction_move)
+    - take [ten steps](repeat_count_move) [forward])relative_direction_move)
+    - walk [forward](relative_direction_move) until you reach the [old tower](reference_object_move)
+    - walk [one step] from the [starting point](reference_object_move)
+    - walk [three steps] [left](relative_direction_move) of [me](reference_object_move)
+    - walk [two steps] from the [starting position](reference_object_move)
+    - walk from the [starting position](reference_object_move) until you reach the [new tower](reference_object_move)
+    - From the [starting point](reference_object_move) move [three steps](repeat_count_move) [left](relative_direction_move) toward the [new tower](reference_object_move)
+    - Go [back]{"entity": "relative_direction_move", "value": "backward"}
+    - move [four steps](repeat_count_move) to the [right](relative_direction_move)
+    - then go [back]{"entity": "relative_direction_move", "value": "backward"}
+    - then move a little to the [right](relative_direction_move)
+    - come straight to [me](reference_object_move)
+    - then move [right](relative_direction_move) for [four steps](repeat_count_move)
+    - go [straight](relative_direction_move) to the [tower](reference_object_move)
+    - move [straight]{"entity": "relative_direction_move", "value": "forward"} for [nine seconds](reference_object_move)
+    - walk [straight](relative_direction_move) for nine seconds
+    - go [forward](relative_direction_move) for [two seconds](repeat_count_move)
+- synonym: backward
+  examples: |
+    - back
+- synonym: forward
+  examples: |
+    - straight
+- synonym: block
+  examples: |
+    - node
+    - blocks
+    - nodes
+- synonym: tile
+  examples: |
+    - step
+- synonym: old tower
+  examples: |
+    - reference tower
+    - reference
+- synonym: new tower
+  examples: |
+    - my tower
+    - our tower
+- synonym: starting point
+  examples: |
+    - starting position
+- synonym: one
+  examples: |
+    - 1
+- synonym: two
+  examples: |
+    - 2
+- synonym: three
+  examples: |
+    - 3
+- synonym: four
+  examples: |
+    - 4

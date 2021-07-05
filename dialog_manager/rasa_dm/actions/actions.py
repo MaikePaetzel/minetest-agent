@@ -23,6 +23,13 @@ class BotInstruction:
 
 
 @dataclass
+class Move(BotInstruction):
+    reference_object_move: str
+    relative_direction_move: str
+    repeat_count_move: str
+
+
+@dataclass
 class MoveBlock(BotInstruction):
     which_block: str
     where_to: str
@@ -80,6 +87,15 @@ class ActionSendBotBrain(Action):
             #set slot for the tracker
             return [SlotSet("player_position", "player_position")]
             
+        if tracker.get_intent_of_latest_message() == "ask_move":
+            request = Move(
+                tracker.get_slot("reference_object_move"),
+                tracker.get_slot("relative_direction_move"),
+                tracker.get_slot("repeat_count_move"),
+            )
+
+            self.rob.process(request)
+
 
         if tracker.get_intent_of_latest_message() == "ask_bot_stop_action":
             dispatcher.utter_message(text="I am stopping")

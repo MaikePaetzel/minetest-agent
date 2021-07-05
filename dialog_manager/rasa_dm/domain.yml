@@ -3,6 +3,7 @@ session_config:
   session_expiration_time: 60
   carry_over_slots_to_new_session: true
 intents:
+- ask_move
 - chitchat
 - greet
 - goodbye
@@ -14,6 +15,9 @@ intents:
 entities:
 - player_position
 - position
+- reference_object_move
+- relative_direction_move
+- repeat_count_move
 - which_block
 slots:
   position:
@@ -23,6 +27,15 @@ slots:
     type: text
     influence_conversation: false
   player_position:
+    type: text
+    influence_conversation: false
+  reference_object_move:
+    type: text
+    influence_conversation: false
+  relative_direction_move:
+    type: text
+    influence_conversation: false
+  repeat_count_move:
     type: text
     influence_conversation: false
 responses:
