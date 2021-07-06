@@ -200,6 +200,9 @@ class Env(tensorforce.Environment):
             self.ox_p = np.random.randint(0, self.x)
             self.oy_p = 4
             self.oz_p = np.random.randint(0, self.z)
+            self.x_p= self.ox_p
+            self.y_p= self.oy_p
+            self.z_p= self.oz_p
         else :
             self.x_p= self.ox_p
             self.y_p= self.oy_p
