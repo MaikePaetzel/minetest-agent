@@ -17,11 +17,11 @@ class BotController:
     MineyNpc - initializing minetest
     @param? ip : server address, local by default
     @param? port : server port, default 29999
-    @param? username : default "RobController"
-    @param? password : default "123456789"
+    @param? username : default "Minehart"
+    @param? password : default ""
     """    
 
-    def __init__(self, server="127.0.0.1", playername="RobController", password="123456789", port=29999):
+    def __init__(self, server="127.0.0.1", playername="Minehart", password="", port=29999):
         self.state = State.NOEXIST
         self.stack = []
         self.mt = miney.Minetest(server, playername, password, port)
@@ -89,10 +89,8 @@ class BotController:
         self.state = State.RUNNING
 
         while len(self.stack) > 0:
-            # TODO: if consecutive behaviour is desired
-            # we have to await for the action to be finished ingame
             self.action = self.stack[-1]
-            self.action()
+            print("Result of Action: ", self.action())
             # pop only after the action is done
             self.stack.pop()
         
