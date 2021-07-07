@@ -49,7 +49,7 @@ stories:
     - position: here
   - action: action_send_bot_brain
 
-- story: interactive_story_1
+- story: greet chitchat
   steps:
   - intent: greet
   - action: utter_greet
@@ -58,7 +58,7 @@ stories:
   - intent: goodbye
   - action: utter_goodbye
 
-- story: interactive_story_1
+- story: greet chitchat 1
   steps:
   - intent: greet
   - action: utter_greet
@@ -69,128 +69,119 @@ stories:
 
 - story: interactive_story_1
   steps:
-  - intent: ask_move
+  - intent: ask_move_block
     entities:
-    - reference_object_move: starting point
-    - repeat_count_move: three steps
-    - relative_direction_move: left
-    - reference_object_move: new tower
-  - slot_was_set:
-    - reference_object_move: new tower
-  - slot_was_set:
     - relative_direction_move: left
   - slot_was_set:
-    - repeat_count_move: three steps
+    - relative_direction_move: left
+  - action: ask_move_form_direction_distance_form
+  - active_loop: ask_move_form_direction_distance_form
+  - slot_was_set:
+    - relative_direction_move: left
+  - slot_was_set:
+    - requested_slot: repeat_count_move
+  - slot_was_set:
+    - repeat_count_move: four tiles
+  - slot_was_set:
+    - repeat_count_move: for four tiles
+  - slot_was_set:
+    - requested_slot: null
+  - active_loop: null
+  - action: action_send_bot_brain
+
+- story: interactive_story_1
+  steps:
+  - intent: ask_move_block
+    entities:
+    - relative_direction_move: left
+  - slot_was_set:
+    - relative_direction_move: left
+  - action: ask_move_form_direction_distance_form
+  - active_loop: ask_move_form_direction_distance_form
+  - slot_was_set:
+    - relative_direction_move: left
+  - slot_was_set:
+    - requested_slot: repeat_count_move
+  - slot_was_set:
+    - repeat_count_move: four tiles
+  - slot_was_set:
+    - repeat_count_move: for four tiles
+  - slot_was_set:
+    - requested_slot: null
+  - active_loop: null
   - action: action_send_bot_brain
 
 - story: interactive_story_1
   steps:
   - intent: ask_move
     entities:
-    - relative_direction_move: backward
-  - slot_was_set:
-    - relative_direction_move: backward
-  - action: action_send_bot_brain
-
-- story: interactive_story_1
-  steps:
-  - intent: ask_move
-    entities:
-    - repeat_count_move: eight steps
-    - relative_direction_move: right
-  - slot_was_set:
-    - relative_direction_move: right
-  - slot_was_set:
-    - repeat_count_move: eight steps
-  - action: action_send_bot_brain
-
-- story: interactive_story_2
-  steps:
-  - intent: ask_move
-    entities:
-    - relative_direction_move: left
-    - reference_object_move: tower
-  - slot_was_set:
-    - reference_object_move: tower
-  - slot_was_set:
-    - relative_direction_move: left
-  - action: action_send_bot_brain
-
-- story: interactive_story_1
-  steps:
-  - intent: ask_move
-    entities:
-    - repeat_count_move: four steps
-    - relative_direction_move: right
-  - slot_was_set:
-    - relative_direction_move: right
-  - slot_was_set:
-    - repeat_count_move: four steps
-  - action: action_send_bot_brain
-  - intent: ask_move
-    entities:
-    - relative_direction_move: backward
-  - slot_was_set:
-    - relative_direction_move: backward
-  - action: action_send_bot_brain
-  - intent: ask_move
-    entities:
-    - relative_direction_move: right
-  - slot_was_set:
-    - relative_direction_move: right
-  - action: action_send_bot_brain
-  - intent: ask_move
-    entities:
-    - reference_object_move: me
-  - slot_was_set:
-    - reference_object_move: me
-  - action: action_send_bot_brain
-
-- story: interactive_story_2
-  steps:
-  - intent: ask_move
-    entities:
     - relative_direction_move: left
   - slot_was_set:
     - relative_direction_move: left
+  - action: ask_move_form_direction_distance_form
+  - active_loop: ask_move_form_direction_distance_form
+  - slot_was_set:
+    - relative_direction_move: left
+  - slot_was_set:
+    - requested_slot: repeat_count_move
+  - slot_was_set:
+    - repeat_count_move: four tiles
+  - slot_was_set:
+    - repeat_count_move: for four tiles
+  - slot_was_set:
+    - requested_slot: null
+  - active_loop: null
   - action: action_send_bot_brain
-  - intent: ask_move
-    entities:
-    - relative_direction_move: right
-    - repeat_count_move: four steps
-  - slot_was_set:
-    - relative_direction_move: right
-  - slot_was_set:
-    - repeat_count_move: four steps
-  - action: action_send_bot_brain
-
-- story: interactive_story_1
-  steps:
-  - intent: ask_move
-    entities:
-    - relative_direction_move: forward
-    - reference_object_move: nine seconds
-  - slot_was_set:
-    - reference_object_move: nine seconds
-  - slot_was_set:
-    - relative_direction_move: forward
-
-- story: interactive_story_2
-  steps:
-  - intent: ask_move
-    entities:
-    - relative_direction_move: straight
-  - slot_was_set:
-    - relative_direction_move: straight
 
 - story: interactive_story_3
   steps:
   - intent: ask_move
     entities:
+    - repeat_count_move: three steps
+  - slot_was_set:
+    - repeat_count_move: three steps
+  - action: ask_move_form_direction_distance_form
+  - active_loop: ask_move_form_direction_distance_form
+  - slot_was_set:
+    - repeat_count_move: three steps
+  - slot_was_set:
+    - requested_slot: relative_direction_move
+
+- story: interactive_story_1
+  steps:
+  - intent: ask_move
+    entities:
     - relative_direction_move: forward
-    - repeat_count_move: two seconds
+  - slot_was_set:
+    - relative_direction_move: forward
+  - action: ask_move_form_direction_distance_form
+  - active_loop: ask_move_form_direction_distance_form
   - slot_was_set:
     - relative_direction_move: forward
   - slot_was_set:
-    - repeat_count_move: two seconds
+    - relative_direction_move: forward
+  - slot_was_set:
+    - requested_slot: repeat_count_move
+  - slot_was_set:
+    - repeat_count_move: four
+  - slot_was_set:
+    - repeat_count_move: four
+  - slot_was_set:
+    - requested_slot: null
+  - active_loop: null
   - action: action_send_bot_brain
+  - slot_was_set:
+    - relative_direction_move: null
+  - slot_was_set:
+    - repeat_count_move: null
+  - intent: ask_turn
+    entities:
+    - relative_direction_turn: right
+  - slot_was_set:
+    - relative_direction_turn: right
+  - action: action_send_bot_brain
+  - intent: ask_turn
+    entities:
+    - reference_object_move: tower
+  - slot_was_set:
+    - reference_object_move: tower

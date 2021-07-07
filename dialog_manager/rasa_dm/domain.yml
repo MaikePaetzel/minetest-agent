@@ -4,10 +4,11 @@ session_config:
   carry_over_slots_to_new_session: true
 intents:
 - ask_move
+- ask_turn
+- ask_move_block
 - chitchat
 - greet
 - goodbye
-- ask_move_block
 - ask_come_here
 - ask_bot_stop_action
 - affirm
@@ -16,8 +17,11 @@ entities:
 - player_position
 - position
 - reference_object_move
+- reference_object_turn
 - relative_direction_move
+- relative_direction_turn
 - repeat_count_move
+- repeat_count_turn
 - which_block
 slots:
   position:
@@ -31,11 +35,20 @@ slots:
     influence_conversation: false
   reference_object_move:
     type: text
-    influence_conversation: false
+    influence_conversation: true
   relative_direction_move:
     type: text
-    influence_conversation: false
+    influence_conversation: true
   repeat_count_move:
+    type: text
+    influence_conversation: true
+  reference_object_turn:
+    type: text
+    influence_conversation: false
+  repeat_count_turn:
+    type: text
+    influence_conversation: false
+  relative_direction_turn:
     type: text
     influence_conversation: false
 responses:
@@ -52,10 +65,27 @@ responses:
   - text: I'm sorry, I didn't quite understand that. Could you rephrase?
   utter_default:
   - text: Sorry I didn't get that. Can you rephrase?
+  utter_ask_repeat_count_move:
+  - text: Sorry I need to know for how many steps
+  utter_ask_relative_direction_move:
+  - text: Sorry I need to know which direction to go
+  utter_ask_reference_object_move:
+  - text: Sorry I need to know which object you're talking about
 actions:
 - action_send_bot_brain
 - utter_ask_position
+- utter_ask_relative_direction_move
+- utter_ask_repeat_count_move
 - utter_ask_which_block
 - utter_goodbye
 - utter_greet
 - utter_please_rephrase
+forms:
+  ask_move_form_direction_distance_form:
+    required_slots:
+      relative_direction_move:
+      - type: from_entity
+        entity: relative_direction_move
+      repeat_count_move:
+      - type: from_entity
+        entity: repeat_count_move

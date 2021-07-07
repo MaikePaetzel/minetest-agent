@@ -50,6 +50,7 @@ nlu:
     - Can you move the block?
     - The [wooden](which_block) block
     - move it [here](position)
+    - move to the [left](relative_direction_move)
 - intent: ask_come_here
   examples: |
     - Can you come here?
@@ -81,43 +82,80 @@ nlu:
     - go [back](relative_direction_move)
     - go [back](relative_direction_move) to the [old tower](reference_object_move)
     - go [forward](relative_direction_move)
-    - go [forward](relative_direction_move) for [two seconds](repeat_count_move)
-    - go [four steps](repeat_count_move) [forward](relative_direction_move) to the [new tower](reference_object_move)
+    - go [four](repeat_count_move) steps [forward](relative_direction_move) to the [new tower](reference_object_move)
     - go [left](relative_direction_move)
     - go [right](relative_direction_move)
-    - go [straight] for [eight seconds]
+    - go [straight](relative_direction_move)  for [eight](repeat_count_move) blocks
     - go [straight](relative_direction_move)
-    - go [ten seconds](repeat_count_move) [forward](relative_direction_move)
     - go to the [tower](reference_object_move)
-    - go [five steps](relative_direction_move) to the [right](relative_direction_move)
-    - go [six steps](relative_direction_move) to the [right](relative_direction_move)
+    - go [five](relative_direction_move) steps to the [right](relative_direction_move)
+    - go [six](relative_direction_move) steps to the [right](relative_direction_move)
     - move [back](relative_direction_move)
     - move [forward](relative_direction_move)
-    - move [four blocks](repeat_count_move) to the [right](relative_direction_move)
-    - move [four steps](repeat_count_move) [forward](relative_direction_move) to the [new tower](reference_object_move)
-    - move [four tiles](repeat_count_move) away from the [reference tower](reference_object_move)
+    - move [four](repeat_count_move) blocks to the [right](relative_direction_move)
+    - move [four](repeat_count_move) steps [forward](relative_direction_move) to the [new tower](reference_object_move)
+    - move [four](repeat_count_move) tiles away from the [reference tower](reference_object_move)
     - move [left](relative_direction_move)
     - move [right](relative_direction_move)
-    - move [seven blocks](repeat_count_move) to the [right](relative_direction_move)
-    - move [six steps](repeat_count_move) away from [me](reference_object_move)
-    - take [six steps](repeat_count_move) [backward](relative_direction_move)
-    - take [ten steps](repeat_count_move) [forward])relative_direction_move)
+    - move [seven](repeat_count_move) blocks to the [right](relative_direction_move)
+    - move [six](repeat_count_move) steps away from [me](reference_object_move)
+    - move [three](repeat_count_move) steps [left](relative_direction_move) towards the [tower](reference_object_move)
+    - take [six](repeat_count_move) steps [backward](relative_direction_move)
+    - take [ten](repeat_count_move) steps [forward])relative_direction_move)
     - walk [forward](relative_direction_move) until you reach the [old tower](reference_object_move)
-    - walk [one step] from the [starting point](reference_object_move)
-    - walk [three steps] [left](relative_direction_move) of [me](reference_object_move)
-    - walk [two steps] from the [starting position](reference_object_move)
+    - walk [one] step from the [starting point](reference_object_move)
+    - walk [[three](repeat_count_move)steps [left](relative_direction_move) of [me](reference_object_move)
+    - walk [two](repeat_count_move) steps from the [starting position](reference_object_move)
     - walk from the [starting position](reference_object_move) until you reach the [new tower](reference_object_move)
-    - From the [starting point](reference_object_move) move [three steps](repeat_count_move) [left](relative_direction_move) toward the [new tower](reference_object_move)
+    - From the [starting point](reference_object_move) move [three](repeat_count_move) steps [left](relative_direction_move) toward the [new tower](reference_object_move)
     - Go [back]{"entity": "relative_direction_move", "value": "backward"}
-    - move [four steps](repeat_count_move) to the [right](relative_direction_move)
+    - move [four](repeat_count_move) steps to the [right](relative_direction_move)
     - then go [back]{"entity": "relative_direction_move", "value": "backward"}
     - then move a little to the [right](relative_direction_move)
     - come straight to [me](reference_object_move)
-    - then move [right](relative_direction_move) for [four steps](repeat_count_move)
-    - go [straight](relative_direction_move) to the [tower](reference_object_move)
-    - move [straight]{"entity": "relative_direction_move", "value": "forward"} for [nine seconds](reference_object_move)
-    - walk [straight](relative_direction_move) for nine seconds
-    - go [forward](relative_direction_move) for [two seconds](repeat_count_move)
+    - then move [right](relative_direction_move) for [four](repeat_count_move) steps
+    - go [straight](relative_direction_move) to the [reference tower](reference_object_move)
+    - Can you go [straight]{"entity": "relative_direction_move", "value": "forward"} to the [new tower](reference_object_move)
+    - go [straight]{"entity": "relative_direction_move", "value": "forward"} to the [tower](reference_object_move) and then go [left](relative_direction_move)
+    - go [one](repeat_count_move) step to the [left](relative_direction_move)
+    - go [one](repeat_count_move) more step to the [left](relative_direction_move)
+    - for [four](repeat_count_move) tiles
+    - go to the [left](relative_direction_move)
+    - for [four](repeat_count_move) tiles
+    - move for [three](repeat_count_move) steps
+    - go [one](repeat_count_move) step
+    - go [two](repeat_count_move) steps
+    - go [three](repeat_count_move) steps
+    - go [four](repeat_count_move) steps
+    - go [five](repeat_count_move) steps
+    - go [six](repeat_count_move) steps
+    - go [seven](repeat_count_move) steps
+    - go [eight](repeat_count_move) steps
+    - go [nine](repeat_count_move) steps
+    - go [ten](repeat_count_move) steps
+    - go [eleven](repeat_count_move) steps
+    - go [twelve](repeat_count_move) steps
+    - move [one](repeat_count_move) step
+    - move [two](repeat_count_move) steps
+    - move [three](repeat_count_move) steps
+    - move [four](repeat_count_move) steps
+    - move [five](repeat_count_move) steps
+    - move [six](repeat_count_move) steps
+    - move [seven](repeat_count_move) steps
+    - move [eight](repeat_count_move) steps
+    - move [nine](repeat_count_move) steps
+    - move [ten](repeat_count_move) steps
+    - move [eleven](repeat_count_move) steps
+    - move [twelve](repeat_count_move) steps
+
+- intent: ask_turn
+  examples: |
+    - turn to the [left](relative_direction_turn)
+    - turn [left](relative_direction_turn)
+    - turn to the [right](relative_direction_turn)
+    - turn [right](relative_direction_turn)
+    - turn [45](repeat_count_turn) degrees
+    - turn to the [reference tower](reference_object_turn)
 - synonym: backward
   examples: |
     - back
@@ -132,6 +170,10 @@ nlu:
 - synonym: tile
   examples: |
     - step
+- synonym: steps
+  examples: |
+    - blocks
+    - spaces
 - synonym: old tower
   examples: |
     - reference tower
