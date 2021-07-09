@@ -14,7 +14,7 @@ agent = Agent.create(
     environment=env, 
     memory=5000, 
     batch_size=1,
-    # exploration=0.1
+    exploration=0.1
 )
 
 
