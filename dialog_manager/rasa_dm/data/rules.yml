@@ -5,10 +5,6 @@ rules:
   steps:
     - intent: ask_bot_stop_action
     - action: action_send_bot_brain
-# - rule: Send move action to brain
-#   steps:
-#     - intent: ask_move
-#     - action: action_send_bot_brain
 - rule: Ask come here
   steps:
     - intent: ask_come_here
@@ -17,7 +13,10 @@ rules:
   steps:
     - intent: greet
     - action: utter_greet
-
+- rule: Say you're welcome
+  steps:
+    - intent: thankyou
+    - action: utter_youre_welcome
 - rule: goodbye
   steps:
     - intent: goodbye
@@ -29,19 +28,3 @@ rules:
 
 #---------------------------------------------------------------
 #---------------------------------------------------------------
-
-- rule: Activate ask_move_form_direction_distance form
-  steps:
-  - intent: ask_move
-  - action: ask_move_form_direction_distance_form
-  - active_loop: ask_move_form_direction_distance_form
-
-- rule: send ask_move_form_direction_distance to bot brain when slots are filled
-  condition:
-  - active_loop: ask_move_form_direction_distance_form
-  steps:
-  - action: ask_move_form_direction_distance_form
-  - active_loop: null
-  - slot_was_set:
-    - requested_slot: null
-  - action: action_send_bot_brain

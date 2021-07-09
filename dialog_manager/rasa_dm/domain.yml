@@ -3,33 +3,34 @@ session_config:
   session_expiration_time: 60
   carry_over_slots_to_new_session: true
 intents:
-- ask_move
 - ask_turn
+- ask_place_block
+- ask_destroy_block
+- ask_move
+- ask_bot_stop_action
 - ask_move_block
 - chitchat
 - greet
 - goodbye
 - ask_come_here
-- ask_bot_stop_action
 - affirm
 - deny
+- thankyou
 entities:
+- block_type_place_block
 - player_position
 - position
 - reference_object_move
+- reference_object_place_block
 - reference_object_turn
 - relative_direction_move
 - relative_direction_turn
 - repeat_count_move
+- repeat_count_place_block
 - repeat_count_turn
+- tower_height_destroy_block
 - which_block
 slots:
-  position:
-    type: text
-    influence_conversation: false
-  which_block:
-    type: text
-    influence_conversation: false
   player_position:
     type: text
     influence_conversation: false
@@ -44,23 +45,34 @@ slots:
     influence_conversation: true
   reference_object_turn:
     type: text
-    influence_conversation: false
+    influence_conversation: true
   repeat_count_turn:
     type: text
-    influence_conversation: false
+    influence_conversation: true
   relative_direction_turn:
     type: text
-    influence_conversation: false
+    influence_conversation: true
+  reference_object_place_block:
+    type: text
+    influence_conversation: true
+  block_type_place_block:
+    type: text
+    influence_conversation: true
+  repeat_count_place_block:
+    type: text
+    influence_conversation: true
+  tower_height_destroy_block:
+    type: text
+    influence_conversation: true
 responses:
   utter_greet:
   - text: Hello
   - text: Hey!
+  utter_youre_welcome:
+  - text: You're welcome
+  - text: No problem!
   utter_goodbye:
   - text: Bye
-  utter_ask_position:
-  - text: Where should I move this block?
-  utter_ask_which_block:
-  - text: Which block should I move?
   utter_please_rephrase:
   - text: I'm sorry, I didn't quite understand that. Could you rephrase?
   utter_default:
@@ -71,21 +83,34 @@ responses:
   - text: Sorry I need to know which direction to go
   utter_ask_reference_object_move:
   - text: Sorry I need to know which object you're talking about
+  utter_ask_repeat_count_turn:
+  - text: Sorry I need to know for how long
+  - text: For how much degrees?
+  utter_ask_relative_direction_turn:
+  - text: Which direction should I turn?
+  - text: Left or right?
+  utter_ask_reference_object_turn:
+  - text: Sorry I need to know which object you're talking about
+  utter_ask_block_type_place_block:
+  - text: What type of block should I place?
+  - text: What type?
+  utter_ask_repeat_count_place_block:
+  - text: How many should I put?
+  - text: How many?
+  utter_ask_tower_height_destroy_block:
+  - text: At which height is the block you want me to destroy?
 actions:
 - action_send_bot_brain
+- utter_ask_block_type_place_block
 - utter_ask_position
+- utter_ask_reference_object_move
+- utter_ask_reference_object_turn
 - utter_ask_relative_direction_move
+- utter_ask_relative_direction_turn
 - utter_ask_repeat_count_move
+- utter_ask_repeat_count_turn
+- utter_ask_tower_height_destroy_block
 - utter_ask_which_block
 - utter_goodbye
 - utter_greet
 - utter_please_rephrase
-forms:
-  ask_move_form_direction_distance_form:
-    required_slots:
-      relative_direction_move:
-      - type: from_entity
-        entity: relative_direction_move
-      repeat_count_move:
-      - type: from_entity
-        entity: repeat_count_move
