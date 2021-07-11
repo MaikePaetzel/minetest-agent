@@ -9,19 +9,3 @@ cp -R $PATH_TO_NPCF /home/nrg/software/minetest/mods
 cp -R $PATH_TO_NPCFEY /home/nrg/software/minetest/mods
 $MINETEST --server --worldname $MINETEST_WORLDNAME
 $MINETEST --go --name Minehart --address localhost --port 30000
-
-# run rasa action server
-
-pushd dialog_manager/rasa_dm/
-
-rasa run actions
-
-# run rasa nlu
-
-rasa run --enable-api
-
-popd
-
-# start bot brain + retico main script
-
-python test/test_retico.py rasa_gui_input
