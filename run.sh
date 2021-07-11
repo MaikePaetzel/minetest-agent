@@ -22,6 +22,6 @@ rasa run --enable-api
 
 popd
 
-# start bnot brain + retico main script
+# start bot brain + retico main script
 
 python test/test_retico.py rasa_gui_input
