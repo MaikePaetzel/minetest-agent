@@ -1,1 +1,0 @@
-Retico based dialog manager

@@ -2,13 +2,14 @@ from dataclasses import dataclass
 from typing import Any, Text, Dict, List
 
 from rasa_sdk import Action, Tracker
-from rasa_sdk.events import SlotSet
+from rasa_sdk.events import SlotSet, AllSlotsReset
 from rasa_sdk.executor import CollectingDispatcher
 
-import sys
-REPO_PATH = '/your/repo/path/minetest-agent/agent/rob'
-sys.path.append(REPO_PATH)
-import bot_brain as b
+# import sys
+# REPO_PATH = '/your/repo/path/minetest-agent/agent/rob'
+# sys.path.append(REPO_PATH)
+# import bot_brain as b
+
 
 
 class BotBrain:
@@ -21,16 +22,40 @@ class BotInstruction:
     pass
 
 
+
 @dataclass
-class MoveBlock(BotInstruction):
-    which_block: str
-    where_to: str
+class PlaceBlock(BotInstruction):
+    reference_object_place_block: str
+    repeat_count_place_block: str
+    block_type_place_block: str
+
+
+@dataclass
+class Move(BotInstruction):
+    reference_object_move: str
+    relative_direction_move: str
+    repeat_count_move: str
+
+@dataclass
+class Turn(BotInstruction):
+    reference_object_turn: str
+    relative_direction_turn: str
+    repeat_count_turn: str
+
+
+# @dataclass
+# class MoveBlock(BotInstruction):
+#     which_block: str
+#     where_to: str
 
 
 @dataclass
 class ComeHere(BotInstruction):
     where_to: str
 
+@dataclass
+class DestroyBlock(BotInstruction):
+    tower_height_destroy_block: str
 
 
 @dataclass
@@ -38,13 +63,12 @@ class Stop(BotInstruction):
     pass
 
 
-
 class ActionSendBotBrain(Action):
     def __init__(self):
         super().__init__()
         self.bot_brain = BotBrain()
-        # TODO: replace Dummy
-        self.rob = b.DummyBrain()
+        # # TODO: replace Dummy
+        # self.rob = b.DummyBrain()
 
     def name(self) -> Text:
         return "action_send_bot_brain"
@@ -54,16 +78,36 @@ class ActionSendBotBrain(Action):
             domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
 
         
-        if tracker.get_intent_of_latest_message() == "ask_move_block":
+        # if tracker.get_intent_of_latest_message() == "ask_move_block":
         
-            bot_action = MoveBlock(
-                tracker.get_slot("which_block"),
-                tracker.get_slot("position")
+        #     bot_action = MoveBlock(
+        #         tracker.get_slot("which_block"),
+        #         tracker.get_slot("position")
+        #     )
+            
+        #     if tracker.get_slot("which_block") and tracker.get_slot("position"):
+        #         dispatcher.utter_message(text="I will move the block")
+        #     self.bot_brain.send_action(bot_action)
+
+        if tracker.get_intent_of_latest_message() == "ask_place_block":
+        
+            bot_action = PlaceBlock(
+                tracker.get_slot("reference_object_place_block"),
+                tracker.get_slot("repeat_count_place_block"),
+                tracker.get_slot("block_type_place_block")
             )
-            dispatcher.utter_message(text="I will move the block")
             self.bot_brain.send_action(bot_action)
 
 
+        if tracker.get_intent_of_latest_message() == "ask_destroy_block":
+        
+            bot_action = DestroyBlock(
+                tracker.get_slot("tower_height_destroy_block")
+            )
+            self.bot_brain.send_action(bot_action)
+        
+        
+            return [SlotSet("tower_height_destroy_block", None)]
         
         if tracker.get_intent_of_latest_message() == "ask_come_here":
             request = ComeHere(
@@ -71,17 +115,53 @@ class ActionSendBotBrain(Action):
             )
             dispatcher.utter_message(text="Okay, I'll come to where you are.")
 
-            # make call to the brain
-            self.rob.process(request)
+
+            # self.rob.process(request)
+            self.bot_brain.send_action(request)
 
             # set the slot for rasa to be able to track it
             return [SlotSet("player_position", "player_position")]
             
+        if tracker.get_intent_of_latest_message() == "ask_move":
+            
+            request = Move(
+                tracker.get_slot("reference_object_move"),
+                tracker.get_slot("relative_direction_move"),
+                tracker.get_slot("repeat_count_move"),
+            ) 
+
+            if tracker.get_slot("reference_object_move"):
+                self.bot_brain.send_action(request)
+                return []
+
+            self.bot_brain.send_action(request)
+            
+            # if action fullfilled or started
+            return [SlotSet("relative_direction_move", None), SlotSet("repeat_count_move", None)]
+            # self.rob.process(request)
+
+        if tracker.get_intent_of_latest_message() == "ask_turn":
+            
+            request = Turn(
+                tracker.get_slot("reference_object_turn"),
+                tracker.get_slot("relative_direction_turn"),
+                tracker.get_slot("repeat_count_turn"),
+            ) 
+
+            if tracker.get_slot("reference_object_turn"):
+                self.bot_brain.send_action(request)
+                return [SlotSet("reference_object_turn", None)]
+
+            self.bot_brain.send_action(request)
+            
+            # if action fullfilled or started
+            return [SlotSet("relative_direction_turn", None), SlotSet("repeat_count_turn", None)]
+            # self.rob.process(request)
+
 
         if tracker.get_intent_of_latest_message() == "ask_bot_stop_action":
             dispatcher.utter_message(text="I am stopping")
             self.bot_brain.send_action(Stop())
 
         return []
-
 
