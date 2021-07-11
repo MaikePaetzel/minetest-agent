@@ -1,0 +1,3 @@
+[submodule "droidlet"]
+	path = droidlet
+	url = https://github.com/facebookresearch/droidlet.git
