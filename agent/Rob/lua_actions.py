@@ -1,4 +1,14 @@
-# starts the mining animation
+#        self.lua_code = """
+# local npc = npcf:get_luaentity(\"""" + npc_id + """\")
+# local move_obj = npcf.movement.getControl(npc)
+#         """
+# 
+# 
+# 
+#  starts the mining animation
+
+
+
 lua_mine = """
 move_obj:mine()
 """

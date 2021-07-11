@@ -1,7 +1,7 @@
 import miney
-import atomic_actions as aa
-import lua_actions as la
-import bot_controller as bc
+import agent.Rob.atomic_actions as aa
+import agent.Rob.lua_actions as la
+import agent.Rob.bot_controller as bc
 
 class DummyBrain:
     """

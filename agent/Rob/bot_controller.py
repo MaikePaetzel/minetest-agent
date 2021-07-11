@@ -3,7 +3,7 @@ import threading
 import time
 from enum import Enum
 import configparser
-import atomic_actions as aa
+import agent.Rob.atomic_actions as aa
 
 class State(Enum):
     NOEXIST = 0
@@ -27,7 +27,7 @@ class BotController:
         self.mt = miney.Minetest(server, playername, password, port)
         self.lua_runner = miney.Lua(self.mt)
 
-        CONFIG_PATH = '/your/repo/path/minetest-agent/agent/rob/newnpc.conf'
+        CONFIG_PATH = './agent/Rob/newnpc.conf'
         config = configparser.ConfigParser()
         config.read(CONFIG_PATH)
         config = config['NPC']
