@@ -11,43 +11,7 @@ stories:
   - slot_was_set:
     - player_position: player_position
 
-# - story: greet and move block
-#   steps:
-#   - intent: greet
-#   - action: utter_greet
-#   - intent: ask_move_block
-#   - action: utter_ask_which_block
-#   - intent: ask_move_block
-#     entities:
-#     - which_block: stone
-#   - slot_was_set:
-#     - which_block: stone
-#   - action: utter_ask_position
-#   - intent: ask_move_block
-#     entities:
-#     - position: there
-#   - slot_was_set:
-#     - position: there
-#   - action: action_send_bot_brain
 
-# - story: interactive_story_1
-#   steps:
-#   - intent: greet
-#   - action: utter_greet
-#   - intent: ask_move_block
-#   - action: utter_ask_which_block
-#   - intent: ask_move_block
-#     entities:
-#     - which_block: wooden
-#   - slot_was_set:
-#     - which_block: wooden
-#   - action: utter_ask_position
-#   - intent: ask_move_block
-#     entities:
-#     - position: here
-#   - slot_was_set:
-#     - position: here
-#   - action: action_send_bot_brain
 
 - story: greet chitchat
   steps:
