@@ -35,8 +35,10 @@ class DummyBrain:
             # but we want some of them to happen consecutively
             self.bot.add_action(self.mine_stop)
             self.bot.add_action(self.come_here)
-            self.bot.add_action(self.mine)
+            # self.bot.add_action(self.mine)
             self.bot.start_execution()
+
+            # return True
 
     def init_atomic_actions(self):
         # TODO: add AAs from lua_actions.py programmatically into a list?
