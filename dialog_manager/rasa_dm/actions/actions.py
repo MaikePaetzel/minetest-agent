@@ -4,11 +4,14 @@ from typing import Any, Text, Dict, List
 from rasa_sdk import Action, Tracker
 from rasa_sdk.events import SlotSet, AllSlotsReset
 from rasa_sdk.executor import CollectingDispatcher
+from word2number import w2n
 
-# import sys
+
+import sys
 # REPO_PATH = '/your/repo/path/minetest-agent/agent/rob'
-# sys.path.append(REPO_PATH)
-# import bot_brain as b
+
+sys.path.append(REPO_PATH)
+import bot_brain as b
 
 
 
@@ -68,76 +71,113 @@ class ActionSendBotBrain(Action):
             tracker: Tracker,
             domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
 
-        
-        # if tracker.get_intent_of_latest_message() == "ask_move_block":
-        
-        #     request = MoveBlock(
-        #         tracker.get_slot("which_block"),
-        #         tracker.get_slot("position")
-        #     )
-            
-        #     if tracker.get_slot("which_block") and tracker.get_slot("position"):
-        #         dispatcher.utter_message(text="I will move the block")
-        #     self.rob.process(request)
 
         if tracker.get_intent_of_latest_message() == "ask_place_block":
         
+            # reference_object_place_block = tracker.get_slot("reference_object_place_block")
+            # repeat_count_place_block = tracker.get_slot("repeat_count_place_block")
+            # block_type_place_block =  tracker.get_slot("block_type_place_block")
+            block_type_place_block =  tracker.get_slot("block_type_place_block")
+
+
             request = PlaceBlock(
-                # tracker.get_slot("repeat_count_place_block"),
-                tracker.get_slot("block_type_place_block")
+                # reference_object_place_block,
+                # repeat_count_place_block,
+                block_type_place_block
             )
-            self.rob.process(request)
+            # when action is started
+            if self.rob.process(request):
+                # dispatcher.utter_message(text=f"I will place {repeat_count_place_block} blocks of {block_type_place_block}")
+                dispatcher.utter_message(text=f"I will place a {block_type_place_block} block")
+            else:
+                dispatcher.utter_message(text=f"I think you want me to place a block but some parameters are wrong")
+
+            return [SlotSet("reference_object_place_block", None), SlotSet("repeat_count_place_block", None), SlotSet("block_type_place_block", None)]
+
 
 
         if tracker.get_intent_of_latest_message() == "ask_destroy_block":
-        
+            
+            tower_height_destroy_block = tracker.get_slot("tower_height_destroy_block")
+
             request = DestroyBlock(
-                tracker.get_slot("tower_height_destroy_block")
+                tower_height_destroy_block
             )
-            self.rob.process(request)
-        
+
+
+            if self.rob.process(request):
+                dispatcher.utter_message(text=f"I will destroy the block at tower height {tower_height_destroy_block}")
+            else:
+                dispatcher.utter_message(text=f"I think you want me to destroy a block but some parameters are wrong.")
+
         
             return [SlotSet("tower_height_destroy_block", None)]
         
-        if tracker.get_intent_of_latest_message() == "ask_come_here":
-            request = ComeHere()
-            dispatcher.utter_message(text="Okay, I'll come to where you are.")
 
-            self.rob.process(request)
-
-            # set the slot for rasa to be able to track it
-            return [SlotSet("player_position", "player_position")]
             
         if tracker.get_intent_of_latest_message() == "ask_move":
             
-            request = Move(
-                tracker.get_slot("relative_direction_move"),
-                tracker.get_slot("repeat_count_move"),
-            )
+            reference_object_move = tracker.get_slot("reference_object_move")
+            relative_direction_move = tracker.get_slot("relative_direction_move")
+            repeat_count_move = tracker.get_slot("repeat_count_move")
 
-            self.rob.process(request)
-            
-            # if action fullfilled or started
-            return [SlotSet("relative_direction_move", None), SlotSet("repeat_count_move", None)]
-            # self.rob.process(request)
+            # repeat_count_move = w2n.word_to_num(repeat_count_move) or repeat_count_move
+
+            if repeat_count_move:
+                repeat_count_move = w2n.word_to_num(repeat_count_move)
+
+
+            request = Move(
+                # reference_object_move,
+                relative_direction_move,
+                repeat_count_move
+            ) 
+
+
+            if self.rob.process(request):
+                dispatcher.utter_message(text=f"I'll move {repeat_count_move} counts to the {relative_direction_move}")
+            else:
+                dispatcher.utter_message(text=f"I think you want me to move but some parameters are wrong.")                        
+            return [SlotSet("relative_direction_move", None), SlotSet("repeat_count_move", None), SlotSet("reference_object_move", None)]
+
 
         if tracker.get_intent_of_latest_message() == "ask_turn":
             
-            request = Turn(
-                tracker.get_slot("relative_direction_turn"),
-                #tracker.get_slot("repeat_count_turn"),
-            )
+            reference_object_turn = tracker.get_slot("reference_object_turn")
+            relative_direction_turn = tracker.get_slot("relative_direction_turn")
+            repeat_count_turn = tracker.get_slot("repeat_count_turn")
 
-            self.rob.process(request)
+            request = Turn(
+                # reference_object_turn,
+                relative_direction_turn
+                # repeat_count_turn
+            ) 
+
+
             
-            # if action fullfilled or started
+            if self.rob.process(request):
+                # dispatcher.utter_message(text=f"I'll turn {repeat_count_turn} to the {relative_direction_turn}")
+                dispatcher.utter_message(text=f"I'll turn to the {relative_direction_turn}")
+            else:
+                dispatcher.utter_message(text=f"I think you want me to turn but some parameters seem to be wrong.")
+
             return [SlotSet("relative_direction_turn", None), SlotSet("repeat_count_turn", None)]
-            # self.rob.process(request)
+
 
 
         if tracker.get_intent_of_latest_message() == "ask_bot_stop_action":
-            dispatcher.utter_message(text="I am stopping")
-            self.rob.process(Stop())
+            if self.rob.process(Stop()):
+                dispatcher.utter_message(text="I am stopping")
+            else:
+                dispatcher.utter_message(text="I think you want me to stop but something is wrong. This is what the scientists warned us about.")
 
+        if tracker.get_intent_of_latest_message() == "ask_come_here":
+            request = ComeHere()
+
+            if self.rob.process(request):
+                dispatcher.utter_message(text="Okay, I'll come to where you are.")
+            else:
+                dispatcher.utter_message(text="I think you want me to come to where you are. But something is wrong.")
+
+            
         return []
-

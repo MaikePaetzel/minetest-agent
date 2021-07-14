@@ -32,6 +32,7 @@ nlu:
     - of course
     - that sounds good
     - correct
+    - okay
 - intent: deny
   examples: |
     - no
@@ -58,6 +59,7 @@ nlu:
     - Come to where I am!
     - Come here!
     - Join me
+    - come here
 - intent: ask_bot_stop_action
   examples: |
     - stop
@@ -68,6 +70,8 @@ nlu:
     - sasakfj ajhhlsfsa jasjfsafs
     - this should be a very not interpretable sentence for you
     - ü
+    - could you repeat
+    - how many what
 - intent: ask_move
   examples: |
     - go [back](relative_direction_move)
@@ -125,6 +129,17 @@ nlu:
     - go [ten](repeat_count_move) steps
     - go [eleven](repeat_count_move) steps
     - go [twelve](repeat_count_move) steps
+    - move to the [right]
+    - move to the [left]
+    - move to the [left](relative_direction_move)
+    - move [left](relative_direction_move)
+    - move to the [right](relative_direction_move)
+    - move [right](relative_direction_move)
+    - move towards the [reference tower](reference_object_move)
+    - move towards the [new tower](reference_object_move)
+    - move [clockwise](relative_direction_move)
+    - move [anticlockwise](relative_direction_move)
+    - can you move until you see the [tower](reference_object_move)
     - move [one](repeat_count_move) step
     - move [two](repeat_count_move) steps
     - move [three](repeat_count_move) steps
@@ -138,21 +153,46 @@ nlu:
     - move [eleven](repeat_count_move) steps
     - move [twelve](repeat_count_move) steps
     - okay now walk [three](repeat_count_move) steps
-    - walk [3]{"entity": "repeat_count_turn", "value": "three"} steps
+    - walk [3]{"entity": "repeat_count_move", "value": "three"} steps
     - to the [right](relative_direction_move)
     - [four](repeat_count_move) steps
-    - move [left](relative_direction_move) for [2]{"entity": "repeat_count_turn", "value": "two"} steps
+    - move [left](relative_direction_move) for [2]{"entity": "repeat_count_move", "value": "two"} steps
     - move [two](repeat_count_move) tiles to the [left](relative_direction_move)
     - walk [five](repeat_count_move) steps
     - from the [starting point](reference_object_move) move [left](relative_direction_move)
-    - for [2]{"entity": "repeat_count_turn", "value": "two"} steps
+    - for [2]{"entity": "repeat_count_move", "value": "two"} steps
     - for [two](repeat_count_move) steps
     - okay now start walking
-    - until you reach the [tower](reference_object_turn)
+    - until you reach the [tower](reference_object_move)
     - walk to the [tower building place]{"entity": "reference_object_move", "value": "tower building location"}
     - for [two](repeat_count_move) tiles
     - move [one]{"entity": "repeat_count_move", "value": "1"} step to the [right](relative_direction_move)
-    - [4](repeat_count_turn) tiles
+    - [4](repeat_count_move) tiles
+    - move
+    - [two]{"entity": "repeat_count_move", "value": "2"} steps
+    - for [two]{"entity": "repeat_count_move", "value": "2"} steps
+    - move until you reach the [tower](reference_object_move)
+    - move [three]{"entity": "repeat_count_move", "value": "3"} steps to the [left](relative_direction_move)
+    - move to the [new tower](reference_object_move)
+    - now move [left](relative_direction_move)
+    - please move to the [right](relative_direction_move) for [four]{"entity": "repeat_count_move", "value": "4"} tiles
+    - okay move to over there
+    - for [three]{"entity": "repeat_count_move", "value": "3"} steps move [left](relative_direction_move)
+    - okay move
+    - for [three]{"entity": "repeat_count_move", "value": "3"} steps until you reach that stone block
+    - move [three]{"entity": "repeat_count_move", "value": "3"} steps to the [right](relative_direction_move)
+    - okay then move [left](relative_direction_move)
+    - [3](repeat_count_move)
+    - go to that block
+    - go [ten]{"entity": "repeat_count_move", "value": "10"} steps toward the stone block
+    - [forward](relative_direction_move)
+    - [nine]{"entity": "repeat_count_move", "value": "9"}
+    - [left](relative_direction_move)
+    - [right](relative_direction_move)
+    - [five]{"entity": "repeat_count_move", "value": "5"}
+    - move please
+    - [two]{"entity": "repeat_count_move", "value": "2"} steps [forward](relative_direction_move)
+    - move [one]{"entity": "repeat_count_move", "value": "1"} step [forward](relative_direction_move)
 - intent: ask_turn
   examples: |
     - turn to the [left](relative_direction_turn)
@@ -177,17 +217,31 @@ nlu:
     - turn [clockwise](relative_direction_turn)
     - turn [anticlockwise](relative_direction_turn)
     - now turn [right](relative_direction_turn)
-    - for [two](repeat_count_move) degrees
+    - for [two](repeat_count_turn) degrees
     - can you turn until you see the [tower](reference_object_turn)
     - okay now turn [right](relative_direction_turn) [right](relative_direction_turn)
     - until you see the [new tower](reference_object_turn)
     - until you see the [tower](reference_object_turn)
     - [90](repeat_count_turn) degrees
+    - [ninety](repeat_count_turn) degrees
     - look to the [right](relative_direction_turn)
     - for [90](repeat_count_turn) degrees
     - until face [me](reference_object_turn)
     - okay now turn to the [left](relative_direction_turn)
-    - I don't know. [Two]{"entity": "repeat_count_place_block", "value": "2"}
+    - I don't know. [Two]{"entity": "repeat_count_turn", "value": "2"}
+    - turn
+    - the [new tower](reference_object_turn)
+    - turn [left](relative_direction_turn) for [four]{"entity": "repeat_count_turn", "value": "4"} degrees
+    - turn [left](relative_direction_turn) for [ninety]{"entity": "repeat_count_turn", "value": "90"} degrees
+    - turn [right](relative_direction_turn) for [ninety]{"entity": "repeat_count_turn", "value": "90"} degrees
+    - turn [right](relative_direction_turn) for [four]{"entity": "repeat_count_turn", "value": "4"} degrees
+    - turn [3](repeat_count_turn) degrees to the [right](relative_direction_turn)
+    - turn [three]{"entity": "repeat_count_turn", "value": "3"} degrees to the [right](relative_direction_turn)
+    - about [74](repeat_count_turn)
+    - [left](relative_direction_move)
+    - [40](repeat_count_turn)
+    - [right](relative_direction_turn)
+    - [left](relative_direction_turn)
 - intent: ask_place_block
   examples: |
     - Could you place a [dirt](block_type_place_block) block on the [ground](reference_object_place_block)
@@ -203,7 +257,7 @@ nlu:
     - same as the [reference tower]{"entity": "reference_object_turn", "value": "old tower"}
     - now put down [two](repeat_count_place_block) [stone](block_type_place_block) blocks
     - okay now put down a [dirt](block_type_place_block) block
-    - just [one](repeat_count_move)
+    - just [one](block_type_place_block)
     - and place a block
     - no a [diamond](block_type_place_block) block
     - place [two](repeat_count_place_block) [stone](block_type_place_block) blocks on top of each other
@@ -215,6 +269,26 @@ nlu:
     - a [diamond](block_type_place_block) block this time
     - okay place another block on top of that
     - a [stone](block_type_place_block) block
+    - build a pile of [dirt](block_type_place_block) [three](repeat_count_place_block) blocks high
+    - can you build that [stone](block_type_place_block) wall
+    - put down [two]{"entity": "repeat_count_place_block", "value": "2"} [stone](block_type_place_block) blocks next to the first one
+    - Okay can you place a block at 30,10,-100
+    - place another block
+    - Okay place a block
+    - put down [eight]{"entity": "repeat_count_place_block", "value": "8"} [stone](block_type_place_block) blocks
+    - okay place a block
+    - [three]{"entity": "repeat_count_place_block", "value": "3"}
+    - place block
+    - okay place [three]{"entity": "repeat_count_place_block", "value": "3"} [stone](block_type_place_block) blocks and
+    - on top of that place another block [left](relative_direction_move) of that
+    - a [diamond](block_type_place_block) block
+    - [stone](block_type_place_block) and [diamond](block_type_place_block)
+    - [three]{"entity": "repeat_count_place_block", "value": "3"} by [three]{"entity": "repeat_count_place_block", "value": "3"}
+    - place a block in front of you
+    - [stone](block_type_place_block) block
+    - [five]{"entity": "repeat_count_place_block", "value": "5"}
+    - place [three]{"entity": "repeat_count_place_block", "value": "3"} blocks then quit
+    - [stone](block_type_place_block)
 - intent: ask_destroy_block
   examples: |
     - destroy the [first](tower_height_destroy_block) block from the ground
@@ -229,6 +303,31 @@ nlu:
     - the last block
     - the [second]{"entity": "tower_height_destroy_block", "value": "2"} from the ground
     - destroy the [second]{"entity": "tower_height_destroy_block", "value": "2"} block
+    - destroy the [third]{"entity": "tower_height_destroy_block", "value": "3"} block from the ground
+- intent: out_of_scope
+  examples: |
+    - make me a sandwich
+    - something I can't think of right now
+    - Copy that wall
+    - Copy that tower
+    - Rebuild that tower
+    - Can you copy the tower
+    - Build a tower just like that one
+    - Build that tower
+    - Can you please copy that tower
+    - can you build a tower like that
+    - and build the tower
+    - Please copy that tower
+    - like the tower
+    - please copy that tower
+    - can you rebuild that tower
+    - please build that tower
+    - rebuild that tower
+    - build the wall
+    - rebuild the wall
+- intent: nlu_fallback
+  examples: |
+    - repeat
 - synonym: backward
   examples: |
     - back
@@ -241,6 +340,13 @@ nlu:
 - synonym: two
   examples: |
     - 2
+
+- synonym: ninety
+  examples: |
+    - 90
+- synonym: one hundred eighty
+  examples: |
+    - 180
 - synonym: tower building location
   examples: |
     - tower building place
@@ -248,18 +354,39 @@ nlu:
   examples: |
     - one
     - first
+- synonym: '2'
+  examples: |
+    - two
+    - Two
+    - second
+- synonym: '3'
+  examples: |
+    - three
+    - third
+- synonym: '4'
+  examples: |
+    - four
+    - fourth
+- synonym: '10'
+  examples: |
+    - ten
+- synonym: '9'
+  examples: |
+    - nine
+- synonym: '5'
+  examples: |
+    - five
+    - fifth
 - synonym: old tower
   examples: |
     - reference tower
     - reference
-- synonym: '3'
+- synonym: '8'
   examples: |
-    - third
-    - three
-- synonym: '2'
+    - eight
+- synonym: '6'
   examples: |
-    - second
-    - two
+    - six
 - synonym: right
   examples: |
     - clockwise
@@ -287,29 +414,9 @@ nlu:
 - synonym: starting point
   examples: |
     - starting position
-- synonym: '4'
-  examples: |
-    - four
-    - fourth
-- synonym: '5'
-  examples: |
-    - five
-    - fifth
-- synonym: '6'
-  examples: |
-    - six
 - synonym: '7'
   examples: |
     - seven
-- synonym: '8'
-  examples: |
-    - eight
-- synonym: '9'
-  examples: |
-    - nine
-- synonym: '10'
-  examples: |
-    - ten
 - synonym: '11'
   examples: |
     - eleven
@@ -319,6 +426,3 @@ nlu:
 - synonym: wood
   examples: |
     - wooden
-- regex: repeat_count_move
-  examples: |
-    - \d{1,12}

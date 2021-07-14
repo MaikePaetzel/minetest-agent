@@ -11,43 +11,7 @@ stories:
   - slot_was_set:
     - player_position: player_position
 
-# - story: greet and move block
-#   steps:
-#   - intent: greet
-#   - action: utter_greet
-#   - intent: ask_move_block
-#   - action: utter_ask_which_block
-#   - intent: ask_move_block
-#     entities:
-#     - which_block: stone
-#   - slot_was_set:
-#     - which_block: stone
-#   - action: utter_ask_position
-#   - intent: ask_move_block
-#     entities:
-#     - position: there
-#   - slot_was_set:
-#     - position: there
-#   - action: action_send_bot_brain
 
-# - story: interactive_story_1
-#   steps:
-#   - intent: greet
-#   - action: utter_greet
-#   - intent: ask_move_block
-#   - action: utter_ask_which_block
-#   - intent: ask_move_block
-#     entities:
-#     - which_block: wooden
-#   - slot_was_set:
-#     - which_block: wooden
-#   - action: utter_ask_position
-#   - intent: ask_move_block
-#     entities:
-#     - position: here
-#   - slot_was_set:
-#     - position: here
-#   - action: action_send_bot_brain
 
 - story: greet chitchat
   steps:
@@ -353,6 +317,45 @@ stories:
   - slot_was_set:
     - repeat_count_move: null
 
+- story: move and ask for repeat count move 2
+  steps:
+  - intent: ask_move
+    entities:
+    - relative_direction_move: left
+  - slot_was_set:
+    - relative_direction_move: left
+  - action: utter_ask_repeat_count_move
+  - intent: ask_move
+    entities:
+    - repeat_count_move: two
+  - slot_was_set:
+    - repeat_count_move: two
+  - action: action_send_bot_brain
+  - slot_was_set:
+    - relative_direction_move: null
+  - slot_was_set:
+    - repeat_count_move: null
+
+- story: move and ask for repeat count move 3
+  steps:
+  - intent: ask_move
+    entities:
+    - relative_direction_move: left
+  - slot_was_set:
+    - relative_direction_move: left
+  - action: utter_ask_repeat_count_move
+  - intent: ask_move
+    entities:
+    - repeat_count_move: three
+  - slot_was_set:
+    - repeat_count_move: three
+  - action: action_send_bot_brain
+  - slot_was_set:
+    - relative_direction_move: null
+  - slot_was_set:
+    - repeat_count_move: null
+
+
 - story: interactive_story_1
   steps:
   - intent: ask_move
@@ -369,24 +372,6 @@ stories:
   - slot_was_set:
     - repeat_count_move: null
 
-- story: interactive_story_2
-  steps:
-  - intent: ask_move
-    entities:
-    - relative_direction_move: left
-  - slot_was_set:
-    - relative_direction_move: left
-  - action: utter_ask_repeat_count_move
-  - intent: ask_move
-    entities:
-    - repeat_count_turn: '4'
-  - slot_was_set:
-    - repeat_count_turn: '4'
-  - action: action_send_bot_brain
-  - slot_was_set:
-    - relative_direction_move: null
-  - slot_was_set:
-    - repeat_count_move: null
 
 - story: ask destroy block 1
   steps:
@@ -467,27 +452,38 @@ stories:
     - tower_height_destroy_block: '2'
   - action: action_send_bot_brain
 
-- story: destroy block turn and place block 1
+
+- story: greet, place block, ask for repeat count
   steps:
-  - intent: ask_destroy_block
+  - intent: greet
+  - action: utter_greet
+  - intent: ask_place_block
     entities:
-    - tower_height_destroy_block: '2'
+    - block_type_place_block: stone
   - slot_was_set:
-    - tower_height_destroy_block: '2'
+    - block_type_place_block: stone
+  - action: utter_ask_repeat_count_place_block
+  - intent: ask_place_block
+    entities:
+    - repeat_count_place_block: '2'
+    - block_type_place_block: stone
+  - slot_was_set:
+    - block_type_place_block: stone
+  - slot_was_set:
+    - repeat_count_place_block: '2'
   - action: action_send_bot_brain
-  - slot_was_set:
-    - tower_height_destroy_block: null
-  - intent: ask_turn
+
+- story: out of scope, place block, chitchat
+  steps:
+  - intent: out_of_scope
+  - action: utter_out_of_scope
+  - intent: ask_place_block
+  - action: utter_ask_block_type_place_block
+  - intent: ask_place_block
     entities:
-    - relative_direction_turn: left
+    - block_type_place_block: stone
   - slot_was_set:
-    - relative_direction_turn: left
-  - action: utter_ask_repeat_count_turn
-  - intent: ask_turn
-    entities:
-    - repeat_count_place_block: '2'
-  - slot_was_set:
-    - repeat_count_place_block: '2'
+    - block_type_place_block: stone
   - action: action_send_bot_brain
   - intent: ask_place_block
   - action: utter_ask_block_type_place_block
@@ -497,3 +493,1277 @@ stories:
   - slot_was_set:
     - block_type_place_block: stone
   - action: action_send_bot_brain
+  - intent: chitchat
+  - action: utter_please_rephrase
+
+- story: out of scope, place block, chitchat 2
+  steps:
+  - intent: out_of_scope
+  - action: utter_out_of_scope
+  - intent: ask_place_block
+  - action: utter_ask_block_type_place_block
+  - intent: ask_place_block
+    entities:
+    - block_type_place_block: diamond
+  - slot_was_set:
+    - block_type_place_block: diamond
+  - action: action_send_bot_brain
+  - intent: ask_place_block
+  - action: utter_ask_block_type_place_block
+  - intent: ask_place_block
+    entities:
+    - block_type_place_block: stone
+  - slot_was_set:
+    - block_type_place_block: stone
+  - action: action_send_bot_brain
+  - intent: chitchat
+  - action: utter_please_rephrase
+
+
+- story: turn and ask for object 1
+  steps:
+  - intent: ask_turn
+  - action: utter_ask_reference_object_turn
+  - intent: ask_turn
+    entities:
+    - reference_object_turn: new tower
+  - slot_was_set:
+    - reference_object_turn: new tower
+  - action: action_send_bot_brain
+  - slot_was_set:
+    - reference_object_turn: null
+
+
+- story: turn and ask for object 2
+  steps:
+  - intent: ask_turn
+  - action: utter_ask_reference_object_turn
+  - intent: ask_turn
+    entities:
+    - reference_object_turn: old tower
+  - slot_was_set:
+    - reference_object_turn: old tower
+  - action: action_send_bot_brain
+  - slot_was_set:
+    - reference_object_turn: null
+
+
+- story: out of scope, place block
+  steps:
+  - intent: out_of_scope
+  - action: utter_out_of_scope
+  - intent: ask_place_block
+  - action: utter_ask_block_type_place_block
+  - intent: ask_place_block
+    entities:
+    - block_type_place_block: stone
+  - slot_was_set:
+    - block_type_place_block: stone
+  - action: action_send_bot_brain
+
+- story: interactive_story_1
+  steps:
+  - intent: ask_move
+    entities:
+    - repeat_count_move: '3'
+    - relative_direction_move: left
+  - slot_was_set:
+    - relative_direction_move: left
+  - slot_was_set:
+    - repeat_count_move: '3'
+  - action: action_send_bot_brain
+  - slot_was_set:
+    - relative_direction_move: null
+  - slot_was_set:
+    - repeat_count_move: null
+  - slot_was_set:
+    - reference_object_move: null
+
+- story: interactive_story_2
+  steps:
+  - intent: ask_move
+    entities:
+    - reference_object_move: new tower
+  - slot_was_set:
+    - reference_object_move: new tower
+  - action: action_send_bot_brain
+  - slot_was_set:
+    - reference_object_move: null
+  - intent: ask_move
+    entities:
+    - relative_direction_move: left
+  - slot_was_set:
+    - relative_direction_move: left
+  - action: utter_ask_repeat_count_move
+  - intent: ask_move
+    entities:
+    - repeat_count_move: '2'
+  - slot_was_set:
+    - repeat_count_move: '2'
+  - action: action_send_bot_brain
+  - slot_was_set:
+    - relative_direction_move: null
+  - slot_was_set:
+    - repeat_count_move: null
+  - slot_was_set:
+    - reference_object_move: null
+
+- story: interactive_story_1
+  steps:
+  - intent: ask_turn
+    entities:
+    - relative_direction_turn: right
+    - repeat_count_turn: '4'
+  - slot_was_set:
+    - repeat_count_turn: '4'
+  - slot_was_set:
+    - relative_direction_turn: right
+  - action: action_send_bot_brain
+
+- story: interactive_story_2
+  steps:
+  - intent: ask_turn
+    entities:
+    - relative_direction_turn: right
+    - repeat_count_turn: '4'
+  - slot_was_set:
+    - repeat_count_turn: '4'
+  - slot_was_set:
+    - relative_direction_turn: right
+  - action: action_send_bot_brain
+  - slot_was_set:
+    - relative_direction_turn: null
+  - slot_was_set:
+    - repeat_count_turn: null
+
+- story: turn, destroy block and move
+  steps:
+  - intent: ask_turn
+    entities:
+    - repeat_count_turn: '3'
+    - relative_direction_turn: right
+  - slot_was_set:
+    - repeat_count_turn: '3'
+  - slot_was_set:
+    - relative_direction_turn: right
+  - action: action_send_bot_brain
+  - intent: ask_turn
+    entities:
+    - repeat_count_place_block: '3'
+    - relative_direction_turn: right
+  - slot_was_set:
+    - relative_direction_turn: right
+  - slot_was_set:
+    - repeat_count_place_block: '3'
+  - action: action_send_bot_brain
+  - slot_was_set:
+    - relative_direction_turn: null
+  - slot_was_set:
+    - repeat_count_turn: null
+  - intent: ask_place_block
+    entities:
+    - repeat_count_move: '8'
+    - block_type_place_block: stone
+  - slot_was_set:
+    - repeat_count_move: '8'
+  - slot_was_set:
+    - block_type_place_block: stone
+  - action: action_send_bot_brain
+  - intent: ask_destroy_block
+    entities:
+    - tower_height_destroy_block: '3'
+  - slot_was_set:
+    - tower_height_destroy_block: '3'
+  - action: action_send_bot_brain
+  - slot_was_set:
+    - tower_height_destroy_block: null
+  - intent: ask_move
+    entities:
+    - relative_direction_move: right
+    - repeat_count_move: '4'
+  - slot_was_set:
+    - relative_direction_move: right
+  - slot_was_set:
+    - repeat_count_move: '4'
+  - action: action_send_bot_brain
+  - slot_was_set:
+    - relative_direction_move: null
+  - slot_was_set:
+    - repeat_count_move: null
+  - slot_was_set:
+    - reference_object_move: null
+
+- story: interactive_story_1
+  steps:
+  - intent: out_of_scope
+  - action: utter_out_of_scope
+  - intent: ask_move
+  - action: utter_ask_repeat_count_move
+  - intent: ask_move
+    entities:
+    - repeat_count_move: '3'
+    - relative_direction_move: left
+  - slot_was_set:
+    - relative_direction_move: left
+  - slot_was_set:
+    - repeat_count_move: '3'
+  - action: action_send_bot_brain
+
+- story: interactive_story_2
+  steps:
+  - intent: out_of_scope
+  - action: utter_out_of_scope
+  - intent: ask_move
+  - action: utter_ask_repeat_count_move
+  - intent: ask_move
+    entities:
+    - repeat_count_move: '3'
+  - slot_was_set:
+    - repeat_count_move: '3'
+  - action: action_send_bot_brain
+
+- story: interactive_story_1
+  steps:
+  - intent: ask_move
+    entities:
+    - repeat_count_move: '3'
+    - relative_direction_move: right
+  - slot_was_set:
+    - relative_direction_move: right
+  - slot_was_set:
+    - repeat_count_move: '3'
+  - action: action_send_bot_brain
+  - slot_was_set:
+    - relative_direction_move: null
+  - slot_was_set:
+    - repeat_count_move: null
+  - slot_was_set:
+    - reference_object_move: null
+  - intent: ask_move
+    entities:
+    - reference_object_move: new tower
+  - slot_was_set:
+    - reference_object_move: new tower
+  - action: action_send_bot_brain
+  - slot_was_set:
+    - reference_object_move: null
+
+- story: iffy story 1
+  steps:
+  - intent: ask_move
+    entities:
+    - repeat_count_move: '3'
+    - relative_direction_move: right
+  - slot_was_set:
+    - relative_direction_move: right
+  - slot_was_set:
+    - repeat_count_move: '3'
+  - slot_was_set:
+    - relative_direction_move: right
+  - slot_was_set:
+    - repeat_count_move: '3'
+  - action: action_send_bot_brain
+  - slot_was_set:
+    - relative_direction_move: null
+  - slot_was_set:
+    - repeat_count_move: null
+  - slot_was_set:
+    - reference_object_move: null
+  - intent: out_of_scope
+  - action: utter_out_of_scope
+  - intent: ask_move
+    entities:
+    - relative_direction_move: left
+  - slot_was_set:
+    - relative_direction_move: left
+  - action: utter_ask_repeat_count_move
+  - intent: ask_move
+    entities:
+    - repeat_count_move: '3'
+  - slot_was_set:
+    - repeat_count_move: '3'
+  - action: action_send_bot_brain
+
+- story: greet, out of scope, place block, out of scope, place block
+  steps:
+  - intent: greet
+  - action: utter_greet
+  - intent: out_of_scope
+  - action: utter_out_of_scope
+  - intent: ask_place_block
+  - action: utter_ask_block_type_place_block
+  - intent: out_of_scope
+  - action: utter_out_of_scope
+  - intent: ask_place_block
+  - action: utter_ask_block_type_place_block
+  - intent: ask_place_block
+    entities:
+    - block_type_place_block: stone
+  - slot_was_set:
+    - block_type_place_block: stone
+  - action: utter_ask_repeat_count_place_block
+  - intent: ask_place_block
+    entities:
+    - repeat_count_move: '3'
+  - slot_was_set:
+    - repeat_count_move: '3'
+  - action: action_send_bot_brain
+
+- story: greet, out of scope, place block
+  steps:
+  - intent: greet
+  - action: utter_greet
+  - intent: out_of_scope
+  - action: utter_out_of_scope
+  - intent: ask_place_block
+  - action: utter_ask_block_type_place_block
+
+- story: greet, out of scope, move
+  steps:
+  - intent: greet
+  - action: utter_greet
+  - intent: out_of_scope
+  - action: utter_out_of_scope
+  - intent: ask_move
+  - action: utter_ask_repeat_count_move
+  - intent: ask_move
+    entities:
+    - repeat_count_move: '10'
+  - slot_was_set:
+    - repeat_count_move: '10'
+  - action: utter_ask_relative_direction_move
+  - intent: ask_move
+    entities:
+    - relative_direction_move: forward
+  - slot_was_set:
+    - relative_direction_move: forward
+  - action: action_send_bot_brain
+  - slot_was_set:
+    - relative_direction_move: null
+  - slot_was_set:
+    - repeat_count_move: null
+  - slot_was_set:
+    - reference_object_move: null
+
+- story: move, count, direction 1
+  steps:
+  - intent: ask_move
+  - action: utter_ask_repeat_count_move
+  - intent: ask_move
+    entities:
+    - repeat_count_move: '9'
+  - slot_was_set:
+    - repeat_count_move: '9'
+  - action: utter_ask_relative_direction_move
+  - intent: ask_move
+    entities:
+    - relative_direction_move: left
+  - slot_was_set:
+    - relative_direction_move: left
+  - action: action_send_bot_brain
+  - slot_was_set:
+    - relative_direction_move: null
+  - slot_was_set:
+    - repeat_count_move: null
+  - slot_was_set:
+    - reference_object_move: null
+
+- story: move, count, direction 2
+  steps:
+  - intent: ask_move
+  - action: utter_ask_repeat_count_move
+  - intent: ask_move
+    entities:
+    - repeat_count_move: '2'
+  - slot_was_set:
+    - repeat_count_move: '2'
+  - action: utter_ask_relative_direction_move
+  - intent: ask_move
+    entities:
+    - relative_direction_move: left
+  - slot_was_set:
+    - relative_direction_move: left
+  - action: action_send_bot_brain
+  - slot_was_set:
+    - relative_direction_move: null
+  - slot_was_set:
+    - repeat_count_move: null
+  - slot_was_set:
+    - reference_object_move: null
+
+- story: move, count, direction 3
+  steps:
+  - intent: ask_move
+  - action: utter_ask_repeat_count_move
+  - intent: ask_move
+    entities:
+    - repeat_count_move: '2'
+  - slot_was_set:
+    - repeat_count_move: '2'
+  - action: utter_ask_relative_direction_move
+  - intent: ask_move
+    entities:
+    - relative_direction_move: right
+  - slot_was_set:
+    - relative_direction_move: right
+  - action: action_send_bot_brain
+  - slot_was_set:
+    - relative_direction_move: null
+  - slot_was_set:
+    - repeat_count_move: null
+  - slot_was_set:
+    - reference_object_move: null
+
+- story: move, count, direction 4
+  steps:
+  - intent: ask_move
+  - action: utter_ask_repeat_count_move
+  - intent: ask_move
+    entities:
+    - repeat_count_move: '3'
+  - slot_was_set:
+    - repeat_count_move: '3'
+  - action: utter_ask_relative_direction_move
+  - intent: ask_move
+    entities:
+    - relative_direction_move: forward
+  - slot_was_set:
+    - relative_direction_move: forward
+  - action: action_send_bot_brain
+  - slot_was_set:
+    - relative_direction_move: null
+  - slot_was_set:
+    - repeat_count_move: null
+  - slot_was_set:
+    - reference_object_move: null
+
+- story: move, count, direction 5
+  steps:
+  - intent: ask_move
+  - action: utter_ask_repeat_count_move
+  - intent: ask_move
+    entities:
+    - repeat_count_move: '3'
+  - slot_was_set:
+    - repeat_count_move: '3'
+  - action: utter_ask_relative_direction_move
+  - intent: ask_move
+    entities:
+    - relative_direction_move: backward
+  - slot_was_set:
+    - relative_direction_move: backward
+  - action: action_send_bot_brain
+  - slot_was_set:
+    - relative_direction_move: null
+  - slot_was_set:
+    - repeat_count_move: null
+  - slot_was_set:
+    - reference_object_move: null
+
+- story: move, count, direction 6
+  steps:
+  - intent: ask_move
+  - action: utter_ask_repeat_count_move
+  - intent: ask_move
+    entities:
+    - repeat_count_move: '1'
+  - slot_was_set:
+    - repeat_count_move: '1'
+  - action: utter_ask_relative_direction_move
+  - intent: ask_move
+    entities:
+    - relative_direction_move: backward
+  - slot_was_set:
+    - relative_direction_move: backward
+  - action: action_send_bot_brain
+  - slot_was_set:
+    - relative_direction_move: null
+  - slot_was_set:
+    - repeat_count_move: null
+  - slot_was_set:
+    - reference_object_move: null
+
+- story: move, count, direction 7
+  steps:
+  - intent: ask_move
+  - action: utter_ask_repeat_count_move
+  - intent: ask_move
+    entities:
+    - repeat_count_move: '2'
+  - slot_was_set:
+    - repeat_count_move: '2'
+  - action: utter_ask_relative_direction_move
+  - intent: ask_move
+    entities:
+    - relative_direction_move: left
+  - slot_was_set:
+    - relative_direction_move: left
+  - action: action_send_bot_brain
+  - slot_was_set:
+    - relative_direction_move: null
+  - slot_was_set:
+    - repeat_count_move: null
+  - slot_was_set:
+    - reference_object_move: null
+
+- story: place block, count, type 1
+  steps:
+  - intent: ask_place_block
+  - action: utter_ask_repeat_count_place_block
+  - intent: ask_place_block
+    entities:
+    - repeat_count_place_block: '6'
+  - slot_was_set:
+    - repeat_count_place_block: '6'
+  - action: utter_ask_block_type_place_block
+  - intent: ask_place_block
+    entities:
+    - block_type_place_block: diamond
+  - slot_was_set:
+    - block_type_place_block: diamond
+  - action: action_send_bot_brain
+
+- story: place block, count, type 2
+  steps:
+  - intent: ask_place_block
+  - action: utter_ask_repeat_count_place_block
+  - intent: ask_place_block
+    entities:
+    - repeat_count_place_block: '1'
+  - slot_was_set:
+    - repeat_count_place_block: '1'
+  - action: utter_ask_block_type_place_block
+  - intent: ask_place_block
+    entities:
+    - block_type_place_block: diamond
+  - slot_was_set:
+    - block_type_place_block: diamond
+  - action: action_send_bot_brain
+
+- story: place block, count, type 3
+  steps:
+  - intent: ask_place_block
+  - action: utter_ask_repeat_count_place_block
+  - intent: ask_place_block
+    entities:
+    - repeat_count_place_block: '2'
+  - slot_was_set:
+    - repeat_count_place_block: '2'
+  - action: utter_ask_block_type_place_block
+  - intent: ask_place_block
+    entities:
+    - block_type_place_block: diamond
+  - slot_was_set:
+    - block_type_place_block: diamond
+  - action: action_send_bot_brain
+
+- story: place block, count, type 4
+  steps:
+  - intent: ask_place_block
+  - action: utter_ask_repeat_count_place_block
+  - intent: ask_place_block
+    entities:
+    - repeat_count_place_block: '3'
+  - slot_was_set:
+    - repeat_count_place_block: '3'
+  - action: utter_ask_block_type_place_block
+  - intent: ask_place_block
+    entities:
+    - block_type_place_block: diamond
+  - slot_was_set:
+    - block_type_place_block: diamond
+  - action: action_send_bot_brain
+
+- story: place block, count, type 5
+  steps:
+  - intent: ask_place_block
+  - action: utter_ask_repeat_count_place_block
+  - intent: ask_place_block
+    entities:
+    - repeat_count_place_block: '4'
+  - slot_was_set:
+    - repeat_count_place_block: '4'
+  - action: utter_ask_block_type_place_block
+  - intent: ask_place_block
+    entities:
+    - block_type_place_block: stone
+  - slot_was_set:
+    - block_type_place_block: stone
+  - action: action_send_bot_brain
+
+- story: place block, type, count 1
+  steps:
+  - intent: ask_place_block
+  - action: utter_ask_block_type_place_block
+  - intent: ask_place_block
+    entities:
+    - repeat_count_place_block: '8'
+  - slot_was_set:
+    - repeat_count_place_block: '8'
+  - action: action_send_bot_brain
+
+- story: place block, type, count 2
+  steps:
+  - intent: ask_place_block
+  - action: utter_ask_block_type_place_block
+  - intent: ask_place_block
+    entities:
+    - repeat_count_place_block: '1'
+  - slot_was_set:
+    - repeat_count_place_block: '1'
+  - action: action_send_bot_brain
+
+- story: place block, type, count 3
+  steps:
+  - intent: ask_place_block
+  - action: utter_ask_block_type_place_block
+  - intent: ask_place_block
+    entities:
+    - repeat_count_place_block: '2'
+  - slot_was_set:
+    - repeat_count_place_block: '2'
+  - action: action_send_bot_brain
+
+- story: place block, type, count 4
+  steps:
+  - intent: ask_place_block
+  - action: utter_ask_block_type_place_block
+  - intent: ask_place_block
+    entities:
+    - repeat_count_place_block: '3'
+  - slot_was_set:
+    - repeat_count_place_block: '3'
+  - action: action_send_bot_brain
+
+- story: place block, type, count 5
+  steps:
+  - intent: ask_place_block
+  - action: utter_ask_block_type_place_block
+  - intent: ask_place_block
+    entities:
+    - repeat_count_place_block: '4'
+  - slot_was_set:
+    - repeat_count_place_block: '4'
+  - action: action_send_bot_brain
+
+
+- story: place block, type, count 6
+  steps:
+  - intent: ask_place_block
+  - action: utter_ask_block_type_place_block
+  - intent: ask_place_block
+    entities:
+    - repeat_count_place_block: '5'
+  - slot_was_set:
+    - repeat_count_place_block: '5'
+  - action: action_send_bot_brain
+
+
+- story: move, direction, count 1
+  steps:
+  - intent: ask_move
+  - action: utter_ask_relative_direction_move
+  - intent: ask_move
+    entities:
+    - relative_direction_move: left
+  - slot_was_set:
+    - relative_direction_move: left
+  - action: utter_ask_repeat_count_move
+  - intent: ask_move
+    entities:
+    - repeat_count_move: '5'
+  - slot_was_set:
+    - repeat_count_move: '5'
+  - action: action_send_bot_brain
+  - slot_was_set:
+    - relative_direction_move: null
+  - slot_was_set:
+    - repeat_count_move: null
+  - slot_was_set:
+    - reference_object_move: null
+
+- story: move, direction, count 2
+  steps:
+  - intent: ask_move
+  - action: utter_ask_relative_direction_move
+  - intent: ask_move
+    entities:
+    - relative_direction_move: right
+  - slot_was_set:
+    - relative_direction_move: right
+  - action: utter_ask_repeat_count_move
+  - intent: ask_move
+    entities:
+    - repeat_count_move: '5'
+  - slot_was_set:
+    - repeat_count_move: '5'
+  - action: action_send_bot_brain
+  - slot_was_set:
+    - relative_direction_move: null
+  - slot_was_set:
+    - repeat_count_move: null
+  - slot_was_set:
+    - reference_object_move: null
+
+- story: move, direction, count 3
+  steps:
+  - intent: ask_move
+  - action: utter_ask_relative_direction_move
+  - intent: ask_move
+    entities:
+    - relative_direction_move: forward
+  - slot_was_set:
+    - relative_direction_move: forward
+  - action: utter_ask_repeat_count_move
+  - intent: ask_move
+    entities:
+    - repeat_count_move: '5'
+  - slot_was_set:
+    - repeat_count_move: '5'
+  - action: action_send_bot_brain
+  - slot_was_set:
+    - relative_direction_move: null
+  - slot_was_set:
+    - repeat_count_move: null
+  - slot_was_set:
+    - reference_object_move: null
+
+- story: move, direction, count 4
+  steps:
+  - intent: ask_move
+  - action: utter_ask_relative_direction_move
+  - intent: ask_move
+    entities:
+    - relative_direction_move: backward
+  - slot_was_set:
+    - relative_direction_move: backward
+  - action: utter_ask_repeat_count_move
+  - intent: ask_move
+    entities:
+    - repeat_count_move: '5'
+  - slot_was_set:
+    - repeat_count_move: '5'
+  - action: action_send_bot_brain
+  - slot_was_set:
+    - relative_direction_move: null
+  - slot_was_set:
+    - repeat_count_move: null
+  - slot_was_set:
+    - reference_object_move: null
+
+- story: move, direction, count 5
+  steps:
+  - intent: ask_move
+  - action: utter_ask_relative_direction_move
+  - intent: ask_move
+    entities:
+    - relative_direction_move: backward
+  - slot_was_set:
+    - relative_direction_move: backward
+  - action: utter_ask_repeat_count_move
+  - intent: ask_move
+    entities:
+    - repeat_count_move: '1'
+  - slot_was_set:
+    - repeat_count_move: '1'
+  - action: action_send_bot_brain
+  - slot_was_set:
+    - relative_direction_move: null
+  - slot_was_set:
+    - repeat_count_move: null
+  - slot_was_set:
+    - reference_object_move: null
+
+
+- story: turn, direction, count 1
+  steps:
+  - intent: ask_turn
+  - action: utter_ask_relative_direction_turn
+  - intent: ask_turn
+    entities:
+    - relative_direction_turn: left
+  - slot_was_set:
+    - relative_direction_turn: left
+  - action: utter_ask_repeat_count_turn
+  - intent: ask_turn
+    entities:
+    - repeat_count_turn: '50'
+  - slot_was_set:
+    - repeat_count_turn: '50'
+  - action: action_send_bot_brain
+  - slot_was_set:
+    - relative_direction_turn: null
+  - slot_was_set:
+    - repeat_count_turn: null
+  - slot_was_set:
+    - reference_object_turn: null
+
+- story: turn, direction, count 2
+  steps:
+  - intent: ask_turn
+  - action: utter_ask_relative_direction_turn
+  - intent: ask_turn
+    entities:
+    - relative_direction_turn: right
+  - slot_was_set:
+    - relative_direction_turn: right
+  - action: utter_ask_repeat_count_turn
+  - intent: ask_turn
+    entities:
+    - repeat_count_turn: '40'
+  - slot_was_set:
+    - repeat_count_turn: '40'
+  - action: action_send_bot_brain
+  - slot_was_set:
+    - relative_direction_turn: null
+  - slot_was_set:
+    - repeat_count_turn: null
+  - slot_was_set:
+    - reference_object_turn: null
+
+- story: turn, count, direction 1
+  steps:
+  - intent: ask_turn
+  - action: utter_ask_repeat_count_turn
+  - intent: ask_turn
+    entities:
+    - repeat_count_turn: '90'
+  - slot_was_set:
+    - repeat_count_turn: '90'
+  - action: utter_ask_relative_direction_turn
+  - intent: ask_turn
+    entities:
+    - relative_direction_turn: left
+  - slot_was_set:
+    - relative_direction_turn: left
+  - action: action_send_bot_brain
+  - slot_was_set:
+    - relative_direction_turn: null
+  - slot_was_set:
+    - repeat_count_turn: null
+  - slot_was_set:
+    - reference_object_turn: null
+
+- story: turn, count, direction 2
+  steps:
+  - intent: ask_turn
+  - action: utter_ask_repeat_count_turn
+  - intent: ask_turn
+    entities:
+    - repeat_count_turn: '20'
+  - slot_was_set:
+    - repeat_count_turn: '20'
+  - action: utter_ask_relative_direction_turn
+  - intent: ask_turn
+    entities:
+    - relative_direction_turn: left
+  - slot_was_set:
+    - relative_direction_turn: left
+  - action: action_send_bot_brain
+  - slot_was_set:
+    - relative_direction_turn: null
+  - slot_was_set:
+    - repeat_count_turn: null
+  - slot_was_set:
+    - reference_object_turn: null
+- story: interactive_story_1
+  steps:
+  - intent: ask_turn
+  - action: utter_ask_repeat_count_turn
+  - intent: ask_turn
+    entities:
+    - repeat_count_turn: '74'
+  - slot_was_set:
+    - repeat_count_turn: '74'
+  - action: utter_ask_relative_direction_turn
+  - intent: ask_turn
+    entities:
+    - relative_direction_move: left
+  - slot_was_set:
+    - relative_direction_move: left
+  - action: action_send_bot_brain
+
+- story: turn, count, direction 4
+  steps:
+  - intent: ask_turn
+  - action: utter_ask_repeat_count_turn
+  - intent: ask_turn
+    entities:
+    - repeat_count_turn: '40'
+  - slot_was_set:
+    - repeat_count_turn: '40'
+  - action: utter_ask_relative_direction_turn
+  - intent: ask_turn
+    entities:
+    - relative_direction_turn: right
+  - slot_was_set:
+    - relative_direction_turn: right
+  - action: action_send_bot_brain
+
+- story: interactive_story_1
+  steps:
+  - intent: ask_turn
+  - action: utter_ask_relative_direction_turn
+  - intent: ask_turn
+    entities:
+    - relative_direction_turn: left
+  - slot_was_set:
+    - relative_direction_turn: left
+  - action: utter_ask_repeat_count_turn
+  - intent: ask_turn
+    entities:
+    - repeat_count_turn: three
+  - slot_was_set:
+    - repeat_count_turn: three
+  - action: action_send_bot_brain
+  - slot_was_set:
+    - relative_direction_turn: null
+  - slot_was_set:
+    - repeat_count_turn: null
+
+- story: interactive_story_2
+  steps:
+  - intent: ask_turn
+  - action: utter_ask_relative_direction_turn
+  - intent: ask_turn
+    entities:
+    - relative_direction_turn: right
+  - slot_was_set:
+    - relative_direction_turn: right
+  - action: utter_ask_repeat_count_turn
+  - intent: ask_turn
+    entities:
+    - repeat_count_turn: '1'
+  - slot_was_set:
+    - repeat_count_turn: '1'
+  - action: action_send_bot_brain
+  - slot_was_set:
+    - relative_direction_turn: null
+  - slot_was_set:
+    - repeat_count_turn: null
+
+- story: interactive_story_3
+  steps:
+  - intent: ask_move
+  - action: utter_ask_relative_direction_move
+  - intent: ask_move
+    entities:
+    - relative_direction_move: left
+  - slot_was_set:
+    - relative_direction_move: left
+  - action: utter_ask_repeat_count_move
+  - intent: ask_move
+    entities:
+    - repeat_count_move: three
+  - slot_was_set:
+    - repeat_count_move: three
+  - action: action_send_bot_brain
+
+- story: greet, out of scope, place blocks, deny
+  steps:
+  - intent: greet
+  - action: utter_greet
+  - intent: ask_come_here
+  - action: action_send_bot_brain
+  - slot_was_set:
+    - player_position: player_position
+  - intent: out_of_scope
+  - action: utter_out_of_scope
+  - intent: ask_place_block
+    entities:
+    - repeat_count_place_block: '3'
+    - block_type_place_block: stone
+  - slot_was_set:
+    - block_type_place_block: stone
+  - slot_was_set:
+    - repeat_count_place_block: '3'
+  - action: action_send_bot_brain
+  - intent: ask_place_block
+    entities:
+    - relative_direction_move: left
+  - slot_was_set:
+    - relative_direction_move: left
+  - action: utter_ask_block_type_place_block
+  - intent: ask_place_block
+    entities:
+    - block_type_place_block: diamond
+  - slot_was_set:
+    - block_type_place_block: diamond
+  - action: action_send_bot_brain
+  - intent: deny
+
+- story: interactive_story_1
+  steps:
+  - intent: greet
+  - action: utter_greet
+  - intent: out_of_scope
+  - action: utter_out_of_scope
+  - intent: ask_place_block
+  - action: utter_ask_block_type_place_block
+  - intent: ask_place_block
+    entities:
+    - block_type_place_block: diamond
+  - slot_was_set:
+    - block_type_place_block: diamond
+  - action: utter_ask_repeat_count_place_block
+  - intent: ask_place_block
+    entities:
+    - repeat_count_place_block: '3'
+    - repeat_count_place_block: '3'
+  - slot_was_set:
+    - repeat_count_place_block: '3'
+  - action: action_send_bot_brain
+
+- story: real life story 1
+  steps:
+  - intent: out_of_scope
+  - action: utter_out_of_scope
+  - intent: ask_move
+  - action: utter_ask_repeat_count_move
+  - intent: ask_move
+    entities:
+    - repeat_count_move: '2'
+    - relative_direction_move: forward
+  - slot_was_set:
+    - relative_direction_move: forward
+  - slot_was_set:
+    - repeat_count_move: '2'
+  - action: action_send_bot_brain
+  - intent: out_of_scope
+  - action: utter_out_of_scope
+  - intent: ask_place_block
+  - action: utter_ask_block_type_place_block
+  - intent: ask_move
+    entities:
+    - repeat_count_move: '1'
+    - relative_direction_move: right
+  - slot_was_set:
+    - relative_direction_move: right
+  - slot_was_set:
+    - repeat_count_move: '1'
+  - action: action_send_bot_brain
+  - action: utter_ask_block_type_place_block
+  - intent: ask_place_block
+    entities:
+    - block_type_place_block: stone
+  - slot_was_set:
+    - block_type_place_block: stone
+  - action: utter_ask_repeat_count_place_block
+  - intent: ask_place_block
+    entities:
+    - repeat_count_place_block: '5'
+  - slot_was_set:
+    - repeat_count_place_block: '5'
+  - action: action_send_bot_brain
+  - intent: thankyou
+  - action: utter_youre_welcome
+
+
+- story: real life story changed 1
+  steps:
+  - intent: out_of_scope
+  - action: utter_out_of_scope
+  - intent: ask_move
+  - action: utter_ask_repeat_count_move
+  - intent: ask_move
+    entities:
+    - repeat_count_move: '1'
+    - relative_direction_move: forward
+  - slot_was_set:
+    - relative_direction_move: forward
+  - slot_was_set:
+    - repeat_count_move: '1'
+  - action: action_send_bot_brain
+  - intent: out_of_scope
+  - action: utter_out_of_scope
+  - intent: ask_place_block
+  - action: utter_ask_block_type_place_block
+  - intent: ask_move
+    entities:
+    - repeat_count_move: '1'
+    - relative_direction_move: right
+  - slot_was_set:
+    - relative_direction_move: right
+  - slot_was_set:
+    - repeat_count_move: '1'
+  - action: action_send_bot_brain
+  - action: utter_ask_block_type_place_block
+  - intent: ask_place_block
+    entities:
+    - block_type_place_block: stone
+  - slot_was_set:
+    - block_type_place_block: stone
+  - action: utter_ask_repeat_count_place_block
+  - intent: ask_place_block
+    entities:
+    - repeat_count_place_block: '3'
+  - slot_was_set:
+    - repeat_count_place_block: '3'
+  - action: action_send_bot_brain
+  - intent: thankyou
+  - action: utter_youre_welcome
+
+- story: real life story changed 2
+  steps:
+  - intent: out_of_scope
+  - action: utter_out_of_scope
+  - intent: ask_move
+  - action: utter_ask_repeat_count_move
+  - intent: ask_move
+    entities:
+    - repeat_count_move: '3'
+    - relative_direction_move: left
+  - slot_was_set:
+    - relative_direction_move: left
+  - slot_was_set:
+    - repeat_count_move: '3'
+  - action: action_send_bot_brain
+  - intent: out_of_scope
+  - action: utter_out_of_scope
+  - intent: ask_place_block
+  - action: utter_ask_block_type_place_block
+  - intent: ask_move
+    entities:
+    - repeat_count_move: '2'
+    - relative_direction_move: right
+  - slot_was_set:
+    - relative_direction_move: right
+  - slot_was_set:
+    - repeat_count_move: '2'
+  - action: action_send_bot_brain
+  - action: utter_ask_block_type_place_block
+  - intent: ask_place_block
+    entities:
+    - block_type_place_block: stone
+  - slot_was_set:
+    - block_type_place_block: stone
+  - action: utter_ask_repeat_count_place_block
+  - intent: ask_place_block
+    entities:
+    - repeat_count_place_block: '3'
+  - slot_was_set:
+    - repeat_count_place_block: '3'
+  - action: action_send_bot_brain
+  - intent: thankyou
+  - action: utter_youre_welcome
+
+
+- story: real life story 2
+  steps:
+  - intent: out_of_scope
+  - action: utter_out_of_scope
+  - intent: ask_move
+    entities:
+    - repeat_count_move: '1'
+    - relative_direction_move: forward
+  - slot_was_set:
+    - relative_direction_move: forward
+  - slot_was_set:
+    - repeat_count_move: '1'
+  - action: action_send_bot_brain
+  - intent: affirm
+  - intent: out_of_scope
+  - action: utter_out_of_scope
+  - intent: ask_place_block
+  - action: utter_ask_repeat_count_place_block
+  - intent: nlu_fallback
+  - action: utter_please_rephrase
+  - intent: chitchat
+  - action: utter_please_rephrase
+  - intent: chitchat
+  - action: utter_please_rephrase
+  - intent: ask_place_block
+    entities:
+    - repeat_count_place_block: '3'
+  - slot_was_set:
+    - repeat_count_place_block: '3'
+  - action: utter_ask_block_type_place_block
+  - intent: ask_place_block
+    entities:
+    - block_type_place_block: stone
+  - slot_was_set:
+    - block_type_place_block: stone
+  - action: action_send_bot_brain
+
+
+- story: real life story changed 2
+  steps:
+  - intent: out_of_scope
+  - action: utter_out_of_scope
+  - intent: ask_move
+    entities:
+    - repeat_count_move: '1'
+    - relative_direction_move: forward
+  - slot_was_set:
+    - relative_direction_move: forward
+  - slot_was_set:
+    - repeat_count_move: '1'
+  - action: action_send_bot_brain
+  - intent: affirm
+  - intent: out_of_scope
+  - action: utter_out_of_scope
+  - intent: ask_place_block
+  - action: utter_ask_repeat_count_place_block
+  - intent: nlu_fallback
+  - action: utter_please_rephrase
+  - intent: nlu_fallback
+  - action: utter_please_rephrase
+  - intent: nlu_fallback
+  - action: utter_please_rephrase
+  - intent: ask_place_block
+    entities:
+    - repeat_count_place_block: '3'
+  - slot_was_set:
+    - repeat_count_place_block: '3'
+  - action: utter_ask_block_type_place_block
+  - intent: ask_place_block
+    entities:
+    - block_type_place_block: stone
+  - slot_was_set:
+    - block_type_place_block: stone
+  - action: action_send_bot_brain
+
+
+
+- story: real life story changed 3
+  steps:
+  - intent: out_of_scope
+  - action: utter_out_of_scope
+  - intent: ask_move
+    entities:
+    - repeat_count_move: '2'
+    - relative_direction_move: forward
+  - slot_was_set:
+    - relative_direction_move: forward
+  - slot_was_set:
+    - repeat_count_move: '2'
+  - action: action_send_bot_brain
+  - intent: affirm
+  - intent: out_of_scope
+  - action: utter_out_of_scope
+  - intent: ask_place_block
+  - action: utter_ask_repeat_count_place_block
+  - intent: nlu_fallback
+  - action: utter_please_rephrase
+  - intent: nlu_fallback
+  - action: utter_please_rephrase
+  - intent: nlu_fallback
+  - action: utter_please_rephrase
+  - intent: ask_place_block
+    entities:
+    - repeat_count_place_block: '3'
+  - slot_was_set:
+    - repeat_count_place_block: '3'
+  - action: utter_ask_block_type_place_block
+  - intent: ask_place_block
+    entities:
+    - block_type_place_block: stone
+  - slot_was_set:
+    - block_type_place_block: stone
+  - action: action_send_bot_brain
+
+
+
+
+
+
