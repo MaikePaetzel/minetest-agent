@@ -1,11 +1,8 @@
 import logging as log
 import miney
-import agent.Rob.atomic_actions as aa
-import agent.Rob.lua_actions as la
-import agent.Rob.bot_controller as bc
-# import atomic_actions as aa
-# import lua_actions as la
-# import bot_controller as bc
+import atomic_actions as aa
+import lua_actions as la
+import bot_controller as bc
 from math import isclose
 
 class DemoBrain:
@@ -141,10 +138,9 @@ class DemoBrain:
             z=bot_pos['z'] + delta_z)
         
         # find the highest position to place a new block
-        height = bot_pos['y']-3.0
+        height = bot_pos['y']-1.0
         while self.run_lua(la.lua_get_node.format(pos=lua_target_pos)):
             height += 1.0
-            # print(height)
             lua_target_pos = "{{x={x}, y={y}, z={z}}}".format(
                 x=bot_pos['x'] + delta_x,
                 y=height,

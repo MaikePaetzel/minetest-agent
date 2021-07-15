@@ -27,7 +27,8 @@ class BotController:
         self.mt = miney.Minetest(server, playername, password, port)
         self.lua_runner = miney.Lua(self.mt)
 
-        CONFIG_PATH = './agent/Rob/newnpc.conf'
+        # CONFIG_PATH = '/your/repo/path/minetest-agent/agent/rob/newnpc.conf'
+
         config = configparser.ConfigParser()
         config.read(CONFIG_PATH)
         config = config['NPC']

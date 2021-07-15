@@ -1,14 +1,6 @@
-#        self.lua_code = """
-# local npc = npcf:get_luaentity(\"""" + npc_id + """\")
-# local move_obj = npcf.movement.getControl(npc)
-#         """
-# 
-# 
-# 
-#  starts the mining animation
-
-
-
+#####################_simple_commands_############################
+# executable actions for the bot object
+# starts the mining animation
 lua_mine = """
 move_obj:mine()
 return true
@@ -38,11 +30,8 @@ return true
 """
 # places a block at the highest 
 lua_place_block = """
-local p = npc.object:get_pos()
-
+local p = move_obj.pos
 local new_p = {target}
-print(new_p['x'] .. ' ' .. new_p['y'] .. '  ' .. new_p['z'])
-
 minetest.set_node(new_p, {{name="default:{block}"}})
 return true
 """
@@ -56,9 +45,7 @@ return true
 lua_get_position = """
 local npc = npcf:get_luaentity("{npc_id}")
 local move_obj = npcf.movement.getControl(npc)
-local p = npc.object:get_pos()
-print(p['x'] .. ' y = ' .. p['y'] .. '  ' .. p['z'])
-
+local p = move_obj.pos
 return p
 """
 
@@ -78,12 +65,7 @@ return yaw
 # returns the current node at pos
 # will need to be formatted
 lua_get_node = """
-local node = minetest.get_node_or_nil({pos})
-if node == nil then
-    return true
-end
-print(node.name)
-return node.name ~= 'air' 
+return minetest.get_node_or_nil({pos})
 """
 
 #####################_commands_with_check_############################
@@ -150,16 +132,4 @@ if d < distance then
 else
     return 0
 end
-"""
-
-
-
-##### Break block
-lua_break_block = """
-
-local p = npc.object:get_pos()
-
-local new_p = {target}
-minetest.remove_node(new_p)
-return true
 """
