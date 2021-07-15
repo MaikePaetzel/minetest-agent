@@ -1,7 +1,7 @@
 import miney
-import threading
 import time
 from enum import Enum
+from concurrent import futures
 import configparser
 import atomic_actions as aa
 
@@ -17,17 +17,18 @@ class BotController:
     MineyNpc - initializing minetest
     @param? ip : server address, local by default
     @param? port : server port, default 29999
-    @param? username : default "RobController"
-    @param? password : default "123456789"
+    @param? username : default "Minehart"
+    @param? password : default ""
     """    
 
-    def __init__(self, server="127.0.0.1", playername="RobController", password="123456789", port=29999):
+    def __init__(self, server="127.0.0.1", playername="Minehart", password="", port=29999):
         self.state = State.NOEXIST
-        self.stack = []
+        self.action_q = []
         self.mt = miney.Minetest(server, playername, password, port)
         self.lua_runner = miney.Lua(self.mt)
 
-        CONFIG_PATH = '/home/yem/unizeuch4/minetest-agent/agent/Rob/newnpc.conf'
+        # CONFIG_PATH = '/your/repo/path/minetest-agent/agent/rob/newnpc.conf'
+
         config = configparser.ConfigParser()
         config.read(CONFIG_PATH)
         config = config['NPC']
@@ -48,7 +49,6 @@ class BotController:
         ownername = config['OWNER_NAME']
 
         add_rob = f"""
-
         local ref = {{
             id = "{bot_id}",
             pos = vector.new{pos_vector},
@@ -57,7 +57,6 @@ class BotController:
             owner = "{ownername}",
         }}
         npcf:add_npc(ref)
-
         """
 
         # testing if rob already exists
@@ -85,27 +84,27 @@ class BotController:
             print("Initializing Rob FAILED")
         
     def start_execution(self):
-        # TODO: if State.NOEXIST raise error: "dont start a bot that doesn't exist"
+        assert self.state != State.NOEXIST
+        COMMAND_DELAY = 1.0
         self.state = State.RUNNING
 
-        while len(self.stack) > 0:
-            # TODO: if consecutive behaviour is desired
-            # we have to await for the action to be finished ingame
-            self.action = self.stack[-1]
-            self.action()
+        while len(self.action_q) > 0:
+            self.action = self.action_q[-1]
+            print("Result of Action: ", self.action())
+            time.sleep(COMMAND_DELAY)
             # pop only after the action is done
-            self.stack.pop()
+            self.action_q.pop()
         
         self.state = State.IDLE
 
     def add_action(self, action):
-        self.stack.append(action)
+        self.action_q.append(action)
 
     def stop_execution(self):
         # TODO: interrupt current ingame action
-        self.stack.clear()
+        self.action_q.clear()
         self.state = State.IDLE
 
     def skip_current_action(self):
         # TODO: interrupt current ingame action and continue with next
-        self.stack.pop()
+        pass

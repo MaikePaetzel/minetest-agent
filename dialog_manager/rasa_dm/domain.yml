@@ -3,17 +3,17 @@ session_config:
   session_expiration_time: 60
   carry_over_slots_to_new_session: true
 intents:
-- nlu_fallback
-- ask_move
-- affirm
-- chitchat
 - out_of_scope
+- ask_move
 - ask_place_block
-- thankyou
 - greet
+- chitchat
+- thankyou
+- ask_turn
+- nlu_fallback
+- affirm
 - deny
 - ask_come_here
-- ask_turn
 - ask_destroy_block
 - ask_bot_stop_action
 - goodbye

@@ -57,7 +57,5 @@ local ref = npcf:register_npc("npcfey:npc" ,{
       if distance > max_dist then
        self.object:setpos(p)
       end
-      -- Always looking the owner
-      move_obj:look_to(p)
     end
 })
