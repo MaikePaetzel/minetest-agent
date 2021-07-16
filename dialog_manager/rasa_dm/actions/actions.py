@@ -38,7 +38,6 @@ class Move(BotInstruction):
     direction: str
     distance: str
 
-
 @dataclass
 class Turn(BotInstruction):
 #    reference_object_turn: str
@@ -49,7 +48,6 @@ class Turn(BotInstruction):
 @dataclass
 class ComeHere(BotInstruction):
     pass
-
 
 @dataclass
 class DestroyBlock(BotInstruction):
