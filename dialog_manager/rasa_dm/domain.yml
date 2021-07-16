@@ -3,19 +3,20 @@ session_config:
   session_expiration_time: 60
   carry_over_slots_to_new_session: true
 intents:
-- ask_turn
-- ask_place_block
-- ask_destroy_block
+- out_of_scope
 - ask_move
-- ask_bot_stop_action
-- ask_move_block
-- chitchat
+- ask_place_block
 - greet
-- goodbye
-- ask_come_here
+- chitchat
+- thankyou
+- ask_turn
+- nlu_fallback
 - affirm
 - deny
-- thankyou
+- ask_come_here
+- ask_destroy_block
+- ask_bot_stop_action
+- goodbye
 entities:
 - block_type_place_block
 - player_position
@@ -29,7 +30,6 @@ entities:
 - repeat_count_place_block
 - repeat_count_turn
 - tower_height_destroy_block
-- which_block
 slots:
   player_position:
     type: text
@@ -78,27 +78,25 @@ responses:
   utter_default:
   - text: Sorry I didn't get that. Can you rephrase?
   utter_ask_repeat_count_move:
-  - text: Sorry I need to know for how many steps
+  - text: How many steps should I move?
   utter_ask_relative_direction_move:
-  - text: Sorry I need to know which direction to go
+  - text: I need to know which direction to go.
   utter_ask_reference_object_move:
-  - text: Sorry I need to know which object you're talking about
+  - text: I need to know which object you're talking about
   utter_ask_repeat_count_turn:
-  - text: Sorry I need to know for how long
-  - text: For how much degrees?
+  - text: For how much degrees should I turn?
   utter_ask_relative_direction_turn:
-  - text: Which direction should I turn?
   - text: Left or right?
   utter_ask_reference_object_turn:
-  - text: Sorry I need to know which object you're talking about
+  - text: At which object do I stop?
   utter_ask_block_type_place_block:
   - text: What type of block should I place?
-  - text: What type?
   utter_ask_repeat_count_place_block:
-  - text: How many should I put?
-  - text: How many?
+  - text: How many blocks should I place?
   utter_ask_tower_height_destroy_block:
   - text: At which height is the block you want me to destroy?
+  utter_out_of_scope:
+  - text: Mhh this seems to go over my head. I need more detailed instructions. You could instruct me to move or place a block.
 actions:
 - action_send_bot_brain
 - utter_ask_block_type_place_block
@@ -108,9 +106,11 @@ actions:
 - utter_ask_relative_direction_move
 - utter_ask_relative_direction_turn
 - utter_ask_repeat_count_move
+- utter_ask_repeat_count_place_block
 - utter_ask_repeat_count_turn
 - utter_ask_tower_height_destroy_block
-- utter_ask_which_block
 - utter_goodbye
 - utter_greet
+- utter_out_of_scope
 - utter_please_rephrase
+- utter_youre_welcome

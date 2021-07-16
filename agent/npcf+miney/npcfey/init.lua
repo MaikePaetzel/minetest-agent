@@ -42,7 +42,7 @@ local ref = npcf:register_npc("npcfey:npc" ,{
 		  end
       print(self)
     end,
-    on_step = function(self,dtim) 
+    on_step = function(self,dtim)
       -- Get some initial variable
       local move_obj = npcf.movement.getControl(self)
 			local max_dist = 15
@@ -55,54 +55,8 @@ local ref = npcf:register_npc("npcfey:npc" ,{
       local distance = vector.distance(pos_rob, {x=p.x, y=pos_rob.y, z=p.z})
       -- print(distance)
       if distance > max_dist then
-       print(self) 
+       print(self)
        self.object:setpos(p)
       end
-      -- Always looking the owner
-      move_obj:look_to(p)
-    end,
-    
-
-    get_closest_tree = function(self)
-      print(self) 
-      print('Finding a tree')
-      local move_obj = npcf.movement.getControl(self)
-      print(move_obj)
-      local origin_point = move_obj.pos -- Actually the frist point here
-      print(self.object:getpos())
-      print("Begin point:")
-      print(origin_point.x)
-      print(origin_point.y) -- Won't change
-      print(origin_point.z)
-
-
-      local current_point = {x=0,y=origin_point.y,z=0}
-      
-      local radius = 5
-      local further_min = -1
-      local further_max = 1
-      local tree_dist = {}
-      for i=further_min,further_max do
-        -- local node = minetest.get_node(pos)
-        for j=further_min,further_max do
-          print('Changing ')
-          current_point.x = origin_point.x + i*radius*2
-          current_point.z = origin_point.z + j*radius*2
-          
-          for chunk_x=current_point.x-radius,current_point.x+radius do
-           for chunk_z=current_point.z-radius,current_point.z+radius do
-            local node = minetest.get_node({x=chunk_x, y=current_point.y, z=chunk_z})
-            print(node.name .. " at position " .. chunk_x, current_point.y,chunk_z )
-            if node.name == "default:dirt" then
-              move_obj:walk({x=chunk_x, y=current_point.y, z=chunk_z}, 2)
-              return
-            end
-           end
-          end
-          -- begin_point
-        end
-      end
-
-
     end
 })

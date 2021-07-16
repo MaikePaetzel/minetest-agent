@@ -1,8 +1,8 @@
 import time
 import datetime
+import miney
+import logging as log
 from enum import Enum
-from threading import Condition, Thread
-from concurrent import futures
 
 class Result(Enum):
     RUNNING = 0
@@ -18,120 +18,88 @@ class AtomicAction:
     lua_runner   -  sends lua code off to be executed ingame
     npc_id       -  npc that is supposed to execute the command
     lua_command  -  behaviour to be executed
-    lua_result_check -  lua code to check whether lua_command has been executed ingame
-                    if this is None the execution will always return after max_time
-    check_every  -  timeout between result checks
     max_time     -  max time for lua_command to finish ingame
                     must be > 0.0
+    lua_check    -  lua code to check whether game state eventually changed as expected
+                    if this is None the execution will return after max_time
+    check_pause  -  pause between result checks
     """
-    def __init__(self, lua_runner,
+    def __init__(self,
+                lua_runner,
                 npc_id,
                 lua_command,
-                lua_result_check=None,
-                check_every=0.1,
-                max_time=100.0):
-                # TODO: add callbacks
-                # on_cancel=None
-                # on_success=None
+                max_time = 1.0,
+                lua_check = False,
+                check_pause = 0.5):
 
         self.lua_runner = lua_runner
+
         # CAREFUL: multiline string must not be indented
         # indentation will carry over into lua execution
-        lua_base = """
+        LUA_BASE = """
 local npc = npcf:get_luaentity(\"""" + npc_id + """\")
 local move_obj = npcf.movement.getControl(npc)
         """
         assert lua_command
-        self.lua_command = lua_base + lua_command
+        self.lua_command = LUA_BASE + lua_command
 
-        if lua_result_check:
-            assert max_time > 0.0
-            self.lua_result_check = lua_base + lua_result_check
-        else:
-            self.lua_result_check = None
+        if lua_check:
+            self.lua_check = LUA_BASE + lua_check
+            assert check_pause > 0.0
+            self.check_pause = check_pause
 
-        assert check_every > 0.0
-        self.check_every = check_every
+        if max_time:
+            assert max_time >= 0.0
+            self.max_time = max_time
 
-        assert max_time >= 0.0
-        self.max_time = max_time
-
-        # TODO: add callbacks
-        # self.on_cancel = on_cancel
-        # self.on_success = on_success
-
-    def command_thread(self, condition):
+    def run_checks(self):
         """
         Sends this lua snippet to be executed ingame
-        then waits for the observer_thread to signal
-        whether the execution has reached a final state.
         """
-        condition.acquire()
+        print(self.lua_check)
+        print(f"Commencing result checks at {datetime.datetime.now()}")
+        result = None
+        while not result:
+            try:
+                result = self.lua_runner.run(self.lua_check)
+            except miney.LuaResultTimeout:
+                log.exception(f"Result check timed out after {self.max_time}s at {datetime.datetime.now()}")
+                return 3
+            print(f"Check produced: {result}")
+            if result != 0:
+                return result
+            time.sleep(self.check_pause)
+
+    def run_command(self):
+        """
+        Sends this lua snippet to be executed ingame
+        """
         print(self.lua_command)
         print(f"Attempting execution at {datetime.datetime.now()}")
-        self.lua_runner.run(self.lua_command)
-
-        done = condition.wait(timeout=self.max_time if self.max_time > 0.0 else None)
-        if not done:
-            print(f"Execution timed out after {self.max_time} at {datetime.datetime.now()}")
-        else:
-            print(f"Finished execution at {datetime.datetime.now()}")
-        condition.release()
-        return done
-
-    def observer_thread(self, condition):
-        """
-        Method to execute the result checks concurrently.
-        Notifies the command_thread to awake upon completion.
-
-        """
-        result = None
-        while True:
-            result = self.lua_runner.run(self.lua_result_check, timeout=self.check_every)
-
-            if not result or result == Result.RUNNING:
-                print(f"Still running command at {datetime.datetime.now()}", end="\r")
-
-            elif result == Result.SUCCESS:
-                condition.acquire()
-                print(f"Execution successful at {datetime.datetime.now()}", end="\r")
-                condition.notify()
-                condition.release()
-                return result
-
-            elif result == Result.FAIL:
-                condition.acquire()
-                print(f"Execution failed at {datetime.datetime.now()}", end="\r")
-                condition.notify()
-                condition.release()
-                return result
-
-            time.sleep(self.check_every)
+        try:
+             self.lua_runner.run(self.lua_command, timeout=self.max_time if self.max_time > 0 else None)
+        except miney.LuaResultTimeout:
+            log.exception(f"Execution timed out after {self.max_time}s at {datetime.datetime.now()}")
+            return False
+        print(f"Finished execution at {datetime.datetime.now()}")
+        return True
 
     def __call__(self):
         """
         Makes objects of this class callable like a function.
         This means object() will be equivalent to object.__call__()
         """
-        command_result = Result.RUNNING
-        observer_result = None
-
-        condition = Condition()
-        # using a with statement to ensure threads are cleaned up promptly
-        with futures.ThreadPoolExecutor(max_workers=2) as executor:
-            observer_future = None
-            command_future = executor.submit(self.command_thread, (condition))
-            # TODO: if self.lua_result_check:
-            observer_future = executor.submit(self.observer_thread, (condition))
-
-            command_result = command_future.result() # false for TIMEOUT
-            if self.lua_result_check:
-                observer_result = observer_future.result() # 1 for SUCCESS or 2 for FAIL
-        
-        if not lua_result_check:
-            return Result.SUCCESS
-
-        if self.max_time and not command_result:
+        timeout = not self.run_command()
+        if timeout:
             return Result.TIMEOUT
 
-        return observer_result
+        try:
+            if self.lua_check:
+                result = self.run_checks()
+                if result == 1:
+                    return Result.SUCCESS
+                else:
+                    return Result.FAIL
+        except:
+            pass
+        return Result.SUCCESS
