@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 #        self.lua_code = """
 # local npc = npcf:get_luaentity(\"""" + npc_id + """\")
 # local move_obj = npcf.movement.getControl(npc)
@@ -10,11 +9,6 @@
 
 
 
-=======
-#####################_simple_commands_############################
-# executable actions for the bot object
-# starts the mining animation
->>>>>>> d03024e52777fcd58b6467d38e69fddb05e204bc
 lua_mine = """
 move_obj:mine()
 return true
@@ -104,9 +98,6 @@ end
 
 local player = minetest.get_player_by_name(npc.owner)
 local p = player:get_pos()
-<<<<<<< HEAD
-move_obj:walk(p, 2)
-=======
 local n = vector.round(move_obj.pos) 
 
 -- take euclidean distance
@@ -149,5 +140,14 @@ if d < distance then
 else
     return 0
 end
->>>>>>> d03024e52777fcd58b6467d38e69fddb05e204bc
+"""
+
+
+
+##### Break block
+lua_place_block = """
+local p = move_obj.pos
+local new_p = {target}
+minetest.remove_node(new_p)
+return true
 """

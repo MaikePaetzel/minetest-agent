@@ -1,25 +1,31 @@
+local DIRT_LAYER = 1 -- 1 + Dirt layer
+local STONE_STACK = true
+local STONE_STACK_SIZE
+math.randomseed(os.time())
 
 minetest.register_chatcommand("rw", {
     params = params,
-	description = "Rob world command",
-	func = function(name, param)
+    description = "Rob world command",
+    func = function(name, param)
 
         local param_a = {}
         local len = 0
         for token in string.gmatch(param, "[^%s]+") do
-            param_a[len] = token    
+            param_a[len] = token
             len = len + 1
         end
         if len > 0 then
             if param_a[0] == "init" then
                 minetest.chat_send_all('Init')
-                
+
                 local can_continue = true
-                for i= 1, 6 do
+                for i = 1, 6 do
                     local function ToInteger(number)
-                        if pcall(function() math.floor(tonumber(number)) end) then
+                        if pcall(function()
+                            math.floor(tonumber(number))
+                        end) then
                             return math.floor(tonumber(number))
-                        else 
+                        else
                             return 'a'
                         end
                     end
@@ -33,8 +39,8 @@ minetest.register_chatcommand("rw", {
                 end
                 if can_continue then
 
-                    local pos_f = {x=0,z=0,y=0}
-                    local pos_t = {x=0,z=0,y=0}
+                    local pos_f = {x = 0, z = 0, y = 0}
+                    local pos_t = {x = 0, z = 0, y = 0}
 
                     -- Ordering the position
                     if param_a[1] < param_a[4] then
@@ -73,58 +79,97 @@ minetest.register_chatcommand("rw", {
 
                     -- print(minetest.registered_nodes['default:dirt'])
 
-                    for x = pos_f['x'],pos_t['x'] do
-                        for y = pos_f['y'],pos_t['y'] do
-                            for z = pos_f['z'],pos_t['z'] do
-                                local new_pos = {x=x,y=y,z=z}
+                    for x = pos_f['x'], pos_t['x'] do
+                        for y = pos_f['y'], pos_t['y'] do
+                            for z = pos_f['z'], pos_t['z'] do
+                                local new_pos = {x = x, y = y, z = z}
                                 minetest.remove_node(new_pos)
-                                if x == pos_f['x'] or x == pos_t['x'] or z == pos_f['z'] or z == pos_t['z'] then  
-                                    minetest.set_node(new_pos, minetest.registered_nodes['default:obsidian_glass'])
+                                if x == pos_f['x'] or x == pos_t['x'] or z ==
+                                    pos_f['z'] or z == pos_t['z'] then
+                                    minetest.set_node(new_pos,
+                                                      minetest.registered_nodes['default:obsidian_glass'])
                                 end
 
-                                if y == pos_f['y'] then 
-                                    minetest.set_node(new_pos, minetest.registered_nodes['default:dirt_with_grass'])
+                                if y <= pos_f['y'] + 1 then
+                                    minetest.set_node(new_pos,
+                                                      minetest.registered_nodes['default:dirt_with_grass'])
                                 end
 
-                                if y == pos_t['y'] then 
-                                    minetest.set_node(new_pos, minetest.registered_nodes['default:obsidian_glass'])
+                                if y == pos_t['y'] then
+                                    minetest.set_node(new_pos,
+                                                      minetest.registered_nodes['default:obsidian_glass'])
                                 end
-
-
-                            end
-                        end
-                    end
-                    
-
-                    -- Prepare the terrain to teleport player here
-                    for x = pos_f['x'],pos_t['x'] do
-                        for y = pos_t['y']+1,pos_t['y']+5 do
-                            for z = pos_f['z'],pos_t['z'] do
-                                local new_pos = {x=x,y=y,z=z}
-                                minetest.remove_node(new_pos)
                             end
                         end
                     end
 
+                    -- Adding pile of stone
+                    if STONE_STACK then
+                        if pos_f['x'] + 4 > pos_t['x'] then
+                            print('Square too small')
+                            break
+                        end
+                        x = pos_f['x'] + 4
+
+                        if pos_f['y'] + DIRT_LAYER + 1 + STONE_STACK_SIZE >
+                            pos_t['y'] then
+                            print('Square too small')
+                            break
+                        end
+
+                        y = pos_f['y'] + DIRT_LAYER + 1
+
+                        if pos_t['z'] - 4 > pos_f['z'] then
+                            print('Square too small')
+                            break
+                        end
+                        z = pos_t['z'] - 4
+
+                        for s_x = x, x + 1 do
+                            for s_z = z - 1, z do
+                                for s_y = y, y + STONE_STACK_SIZE do
+                                    local new_pos = {x = s_x, y = s_y, z = z_z}
+                                    minetest.set_node(new_pos,
+                                                      minetest.registered_nodes['default:stone'])
+                                end
+                            end
+                        end
+
+                    end
+
+                    -- Prepare the terrain to teleport player here - Destroy the top 
+                    for x = pos_f['x'], pos_t['x'] do
+                        for y = pos_t['y'] + 1, pos_t['y'] + 5 do
+                            for z = pos_f['z'], pos_t['z'] do
+                                local new_pos = {x = x, y = y, z = z}
+                                minetest.remove_node(new_pos)
+                            end
+                        end
+                    end
 
                     -- Teleport the player and rob
                     local player = minetest.get_player_by_name(name)
-                    player:set_pos({x=pos_f['x']+2,y=pos_t['y']+2,z=pos_f['z']+2})
-
+                    player:set_pos({
+                        x = pos_f['x'] + 2,
+                        y = pos_t['y'] + 2,
+                        z = pos_f['z'] + 2
+                    })
                     local var = "hello"
                     local npc = npcf:get_luaentity('default_npc')
                     print(npc)
                     local move_obj = npcf.movement.getControl(npc)
-                    npc.object:setpos({x=pos_f['x']+4,y=pos_f['y']+2,z=pos_f['z']+4})
+                    npc.object:setpos({
+                        x = pos_f['x'] + 4,
+                        y = pos_f['y'] + 2,
+                        z = pos_f['z'] + 4
+                    })
 
-
-                else 
-                    minetest.chat_send_all("Wrong init parameter waiting for <x> <y> <z> <x'> <y'> <z'> ")
+                else
+                    minetest.chat_send_all(
+                        "Wrong init parameter waiting for <x> <y> <z> <x'> <y'> <z'> ")
                 end
-                
 
-                
-            elseif  param_a[0] == "initr" then
+            elseif param_a[0] == "initr" then
             else
                 minetest.chat_send_all('Wrong parameters')
             end
