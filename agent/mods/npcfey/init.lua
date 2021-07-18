@@ -58,6 +58,7 @@ local ref = npcf:register_npc("npcfey:npc" ,{
        print(self) 
       --  self.object:setpos(p)
       end
+<<<<<<< HEAD:agent/mods/npcfey/init.lua
       -- Always looking the owner
       move_obj:look_to(p)
     end,
@@ -105,5 +106,7 @@ local ref = npcf:register_npc("npcfey:npc" ,{
       end
 
 
+=======
+>>>>>>> d03024e52777fcd58b6467d38e69fddb05e204bc:agent/npcf+miney/npcfey/init.lua
     end
 })
