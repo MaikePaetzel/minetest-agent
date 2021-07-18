@@ -56,7 +56,7 @@ local ref = npcf:register_npc("npcfey:npc" ,{
       -- print(distance)
       if distance > max_dist then
        print(self) 
-       self.object:setpos(p)
+      --  self.object:setpos(p)
       end
       -- Always looking the owner
       move_obj:look_to(p)
@@ -84,6 +84,7 @@ local ref = npcf:register_npc("npcfey:npc" ,{
       local tree_dist = {}
       for i=further_min,further_max do
         -- local node = minetest.get_node(pos)
+        -- TODO : Fixing radius
         for j=further_min,further_max do
           print('Changing ')
           current_point.x = origin_point.x + i*radius*2
