@@ -55,10 +55,9 @@ local ref = npcf:register_npc("npcfey:npc" ,{
       local distance = vector.distance(pos_rob, {x=p.x, y=pos_rob.y, z=p.z})
       -- print(distance)
       if distance > max_dist then
-       print(self) 
+--        print(self)
       --  self.object:setpos(p)
       end
-<<<<<<< HEAD:agent/mods/npcfey/init.lua
       -- Always looking the owner
       move_obj:look_to(p)
     end,
@@ -106,7 +105,5 @@ local ref = npcf:register_npc("npcfey:npc" ,{
       end
 
 
-=======
->>>>>>> d03024e52777fcd58b6467d38e69fddb05e204bc:agent/npcf+miney/npcfey/init.lua
     end
 })

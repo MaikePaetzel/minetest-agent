@@ -1,6 +1,6 @@
 local DIRT_LAYER = 1 -- 1 + Dirt layer
 local STONE_STACK = true
-local STONE_STACK_SIZE
+local STONE_STACK_SIZE = 2
 math.randomseed(os.time())
 
 minetest.register_chatcommand("rw", {
@@ -104,33 +104,40 @@ minetest.register_chatcommand("rw", {
                     end
 
                     -- Adding pile of stone
+                    local large_enough = true
                     if STONE_STACK then
                         if pos_f['x'] + 4 > pos_t['x'] then
-                            print('Square too small')
-                            break
+                            print('Square too small x ')
+                            large_enough = false
                         end
-                        x = pos_f['x'] + 4
+                        local x = pos_f['x'] + 4
 
                         if pos_f['y'] + DIRT_LAYER + 1 + STONE_STACK_SIZE >
                             pos_t['y'] then
-                            print('Square too small')
-                            break
+                            print('Square too small y')
+                            large_enough = false
                         end
 
-                        y = pos_f['y'] + DIRT_LAYER + 1
+                        local y = pos_f['y'] + DIRT_LAYER + 1
 
-                        if pos_t['z'] - 4 > pos_f['z'] then
-                            print('Square too small')
-                            break
+                        if pos_t['z'] - 4 < pos_f['z'] then
+                            print('Square too small z')
+                            large_enough = false
                         end
-                        z = pos_t['z'] - 4
+                        local z = pos_t['z'] - 4
 
-                        for s_x = x, x + 1 do
-                            for s_z = z - 1, z do
-                                for s_y = y, y + STONE_STACK_SIZE do
-                                    local new_pos = {x = s_x, y = s_y, z = z_z}
-                                    minetest.set_node(new_pos,
-                                                      minetest.registered_nodes['default:stone'])
+                        if large_enough then
+                            for s_x = x, x + 1 do
+                                for s_z = z - 1, z do
+                                    for s_y = y, y + STONE_STACK_SIZE do
+                                        local new_pos = {
+                                            x = s_x,
+                                            y = s_y,
+                                            z = s_z
+                                        }
+                                        minetest.set_node(new_pos,
+                                                          minetest.registered_nodes['default:stone'])
+                                    end
                                 end
                             end
                         end
@@ -150,17 +157,17 @@ minetest.register_chatcommand("rw", {
                     -- Teleport the player and rob
                     local player = minetest.get_player_by_name(name)
                     player:set_pos({
-                        x = pos_f['x'] + 2,
+                        x = pos_f['x'] + 2,-
                         y = pos_t['y'] + 2,
                         z = pos_f['z'] + 2
                     })
-                    local var = "hello"
+                    -- local var = "hello"  
                     local npc = npcf:get_luaentity('default_npc')
-                    print(npc)
+                    -- print(npc)
                     local move_obj = npcf.movement.getControl(npc)
                     npc.object:setpos({
                         x = pos_f['x'] + 4,
-                        y = pos_f['y'] + 2,
+                        y = pos_f['y'] + 2 + DIRT_LAYER,
                         z = pos_f['z'] + 4
                     })
 

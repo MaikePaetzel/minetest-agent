@@ -38,8 +38,11 @@ return true
 """
 # places a block at the highest 
 lua_place_block = """
-local p = move_obj.pos
+local p = npc.object:get_pos()
+
 local new_p = {target}
+print(new_p['x'] .. ' ' .. new_p['y'] .. '  ' .. new_p['z'])
+
 minetest.set_node(new_p, {{name="default:{block}"}})
 return true
 """
@@ -53,7 +56,9 @@ return true
 lua_get_position = """
 local npc = npcf:get_luaentity("{npc_id}")
 local move_obj = npcf.movement.getControl(npc)
-local p = move_obj.pos
+local p = npc.object:get_pos()
+print(p['x'] .. ' y = ' .. p['y'] .. '  ' .. p['z'])
+
 return p
 """
 
@@ -73,7 +78,12 @@ return yaw
 # returns the current node at pos
 # will need to be formatted
 lua_get_node = """
-return minetest.get_node_or_nil({pos})
+local node = minetest.get_node_or_nil({pos})
+if node == nil then
+    return true
+end
+print(node.name)
+return node.name ~= 'air' 
 """
 
 #####################_commands_with_check_############################
@@ -145,8 +155,10 @@ end
 
 
 ##### Break block
-lua_place_block = """
-local p = move_obj.pos
+lua_break_block = """
+
+local p = npc.object:get_pos()
+
 local new_p = {target}
 minetest.remove_node(new_p)
 return true
