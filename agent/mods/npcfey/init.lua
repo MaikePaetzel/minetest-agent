@@ -16,6 +16,7 @@ local ref = npcf:register_npc("npcfey:npc" ,{
     description = "Im Rob",
     textures = {"npcf_info_skin.png"},
     mesh = "npcf_tst.x",
+    orientation = 1,
     var = {
         selected = "",
         nodelist = {},
@@ -102,8 +103,17 @@ local ref = npcf:register_npc("npcfey:npc" ,{
           end
           -- begin_point
         end
+      end,
+
+      get_orientation = function(self)
+        return self.orientaion
+      end,
+
+      set_orientation = function(self, n_orien)
+        -- TODO check if the orientation is right
+        self.orientaion = n_orien
+
+
       end
-
-
     end
 })
