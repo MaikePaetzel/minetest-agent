@@ -34,6 +34,10 @@ def generate_silence(nsamples, sample_width):
     return b"\0" * nsamples * sample_width
 
 
+RATE = 16000
+CHUNK = int(RATE / 10)  # 100ms
+
+
 class MicrophoneModule(abstract.AbstractProducingModule):
     """A module that produces IUs containing audio signals that are captures by
     a microphone."""
@@ -59,9 +63,10 @@ class MicrophoneModule(abstract.AbstractProducingModule):
             frame_count (int): The number of frames that are stored in in_data
         """
         self.audio_buffer.put(in_data)
+        #print("Mic audio buffer", self.audio_buffer.qsize())
         return (in_data, pyaudio.paContinue)
 
-    def __init__(self, chunk_size, rate=44100, sample_width=2, **kwargs):
+    def __init__(self, chunk_size=CHUNK, rate=RATE, sample_width=2, **kwargs):
         """
         Initialize the Microphone Module.
 
@@ -87,13 +92,15 @@ class MicrophoneModule(abstract.AbstractProducingModule):
         sample = self.audio_buffer.get()
         output_iu = self.create_iu()
         output_iu.set_audio(sample, self.chunk_size, self.rate, self.sample_width)
+        #print("Mic output_iu", output_iu)
+        #print(self._right_buffers[0].qsize())
         return output_iu
 
     def setup(self):
         """Set up the microphone for recording."""
         p = self._p
         self.stream = p.open(
-            format=p.get_format_from_width(self.sample_width),
+            format=pyaudio.paInt16,
             channels=CHANNELS,
             rate=self.rate,
             input=True,
@@ -101,6 +108,7 @@ class MicrophoneModule(abstract.AbstractProducingModule):
             stream_callback=self.callback,
             frames_per_buffer=self.chunk_size,
             start=False,
+            input_device_index=9
         )
 
     def prepare_run(self):

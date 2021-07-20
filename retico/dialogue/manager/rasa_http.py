@@ -43,7 +43,9 @@ class RasaHTTP(abstract.AbstractModule):
         res = req.json()
         if len(res) == 0:
             return None
-        return res[0]["text"]
+        response_text = res[0]["text"]
+        print("Got response from rasa", repr(response_text))
+        return response_text
 
     def on_bot_message(self, bot_utterance_iu):
         bot_utterance_name = bot_utterance_iu.get_text()

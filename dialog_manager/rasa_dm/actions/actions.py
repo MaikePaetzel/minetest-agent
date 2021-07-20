@@ -5,20 +5,15 @@ from rasa_sdk import Action, Tracker
 from rasa_sdk.events import SlotSet, AllSlotsReset
 from rasa_sdk.executor import CollectingDispatcher
 from word2number import w2n
+import queue
 
-
-import sys
+#import sys
 # REPO_PATH = '/your/repo/path/minetest-agent/agent/rob'
 
-sys.path.append(REPO_PATH)
-import bot_brain as b
+#sys.path.append(REPO_PATH)
+#import bot_brain as b
 
 
-
-class BotBrain:
-    # dummy class as a stand-in for the brain implementation
-    def send_action(self, action):
-        print(f"bot brain received action {action}")
 
 
 class BotInstruction:
@@ -49,6 +44,7 @@ class Turn(BotInstruction):
 class ComeHere(BotInstruction):
     pass
 
+
 @dataclass
 class DestroyBlock(BotInstruction):
     height: str
@@ -64,7 +60,7 @@ class ActionSendBotBrain(Action):
 
     def __init__(self, output_queue):
         super().__init__()
-        self.rob = b.DemoBrain()
+        self.output_queue = output_queue
 
     def name(self) -> Text:
         return "action_send_bot_brain"
@@ -72,6 +68,8 @@ class ActionSendBotBrain(Action):
     def run(self, dispatcher: CollectingDispatcher,
             tracker: Tracker,
             domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+
+        print("Calling ActionSendBotBrain.run")
 
 
         if tracker.get_intent_of_latest_message() == "ask_place_block":
@@ -88,11 +86,11 @@ class ActionSendBotBrain(Action):
                 block_type_place_block
             )
             # when action is started
-            if self.rob.process(request):
-                # dispatcher.utter_message(text=f"I will place {repeat_count_place_block} blocks of {block_type_place_block}")
-                dispatcher.utter_message(text=f"I will place a {block_type_place_block} block")
-            else:
-                dispatcher.utter_message(text=f"I think you want me to place a block but some parameters are wrong")
+            self.output_queue.put_nowait(request)
+            # dispatcher.utter_message(text=f"I will place {repeat_count_place_block} blocks of {block_type_place_block}")
+            dispatcher.utter_message(text=f"I will place a {block_type_place_block} block")
+            #else:
+            #    dispatcher.utter_message(text=f"I think you want me to place a block but some parameters are wrong")
 
             return [SlotSet("reference_object_place_block", None), SlotSet("repeat_count_place_block", None), SlotSet("block_type_place_block", None)]
 
@@ -102,15 +100,13 @@ class ActionSendBotBrain(Action):
 
             tower_height_destroy_block = tracker.get_slot("tower_height_destroy_block")
 
-            request = DestroyBlock(
-                tower_height_destroy_block
-            )
+            request = DestroyBlock(tower_height_destroy_block)
 
+            self.output_queue.put_nowait(request)
+            dispatcher.utter_message(text=f"I will destroy the block at tower height {tower_height_destroy_block}")
 
-            if self.rob.process(request):
-                dispatcher.utter_message(text=f"I will destroy the block at tower height {tower_height_destroy_block}")
-            else:
-                dispatcher.utter_message(text=f"I think you want me to destroy a block but some parameters are wrong.")
+            #else:
+            #    dispatcher.utter_message(text=f"I think you want me to destroy a block but some parameters are wrong.")
 
 
             return [SlotSet("tower_height_destroy_block", None)]
@@ -135,13 +131,11 @@ class ActionSendBotBrain(Action):
                 repeat_count_move
             )
 
-
-            if self.rob.process(request):
-                dispatcher.utter_message(text=f"I'll move {repeat_count_move} counts to the {relative_direction_move}")
-            else:
-                dispatcher.utter_message(text=f"I think you want me to move but some parameters are wrong.")
+            self.output_queue.put_nowait(request)
+            dispatcher.utter_message(text=f"I'll move {repeat_count_move} counts to the {relative_direction_move}")
+            #else:
+            #    dispatcher.utter_message(text=f"I think you want me to move but some parameters are wrong.")
             return [SlotSet("relative_direction_move", None), SlotSet("repeat_count_move", None), SlotSet("reference_object_move", None)]
-
 
         if tracker.get_intent_of_latest_message() == "ask_turn":
 
@@ -155,31 +149,29 @@ class ActionSendBotBrain(Action):
                 # repeat_count_turn
             )
 
-
-
-            if self.rob.process(request):
-                # dispatcher.utter_message(text=f"I'll turn {repeat_count_turn} to the {relative_direction_turn}")
-                dispatcher.utter_message(text=f"I'll turn to the {relative_direction_turn}")
-            else:
-                dispatcher.utter_message(text=f"I think you want me to turn but some parameters seem to be wrong.")
+            self.output_queue.put_nowait(request)
+            # dispatcher.utter_message(text=f"I'll turn {repeat_count_turn} to the {relative_direction_turn}")
+            dispatcher.utter_message(text=f"I'll turn to the {relative_direction_turn}")
+            #else:
+            #    dispatcher.utter_message(text=f"I think you want me to turn but some parameters seem to be wrong.")
 
             return [SlotSet("relative_direction_turn", None), SlotSet("repeat_count_turn", None)]
 
-
-
         if tracker.get_intent_of_latest_message() == "ask_bot_stop_action":
-            if self.rob.process(Stop()):
-                dispatcher.utter_message(text="I am stopping")
-            else:
-                dispatcher.utter_message(text="I think you want me to stop but something is wrong. This is what the scientists warned us about.")
+            self.output_queue.put_nowait(Stop())
+
+            #if self.rob.process(Stop()):
+            dispatcher.utter_message(text="I am stopping")
+            #else:
+            #    dispatcher.utter_message(text="I think you want me to stop but something is wrong. This is what the scientists warned us about.")
 
         if tracker.get_intent_of_latest_message() == "ask_come_here":
             request = ComeHere()
 
-            if self.rob.process(request):
-                dispatcher.utter_message(text="Okay, I'll come to where you are.")
-            else:
-                dispatcher.utter_message(text="I think you want me to come to where you are. But something is wrong.")
+            self.output_queue.put_nowait(request)
+            dispatcher.utter_message(text="Okay, I'll come to where you are.")
+            #else:
+            #    dispatcher.utter_message(text="I think you want me to come to where you are. But something is wrong.")
 
 
         return []
