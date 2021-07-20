@@ -19,11 +19,11 @@ def get_action_endpoint(output_queue: queue.Queue):
     async def handle_action(request: web.Request):
         dispatcher = CollectingDispatcher()
         rasa_json = await request.json()
-        print(f"Got json from rasa {rasa_json}")
+        #print(f"get_action_endpoint.handle_action: got json from rasa {rasa_json}")
         tracker = Tracker.from_dict(rasa_json["tracker"])
         output_events = action.run(dispatcher, tracker, domain={})
         response = {"events": output_events, "responses": dispatcher.messages}
-        print(f"Returning output from handle_action {json.dumps(response)}")
+        print(f"get_action_endpoint.handle_action: returning output from handle_action {json.dumps(response)}")
         return web.json_response(response)
 
     async def actions(_):

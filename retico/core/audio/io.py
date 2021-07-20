@@ -87,6 +87,7 @@ class MicrophoneModule(abstract.AbstractProducingModule):
         self.stream = None
 
     def process_iu(self, input_iu):
+        print("MicrophoneModule.process_iu: got iu")
         if not self.audio_buffer:
             return None
         sample = self.audio_buffer.get()
@@ -149,18 +150,19 @@ class SpeakerModule(abstract.AbstractConsumingModule):
         self.rate = rate
         self.sample_width = sample_width
         self.use_speaker = use_speaker
-
-        self._p = pyaudio.PyAudio()
-
+        self._p = None
         self.stream = None
         self.time = None
 
     def process_iu(self, input_iu):
+        print("io.SpeakerModule.process_iu: have iu")
         self.stream.write(bytes(input_iu.raw_audio))
         return None
 
-    def setup(self):
+    def prepare_run(self):
         """Set up the speaker for speaking...?"""
+        print("io.SpeakerModule.prepare_run: starting speaker output stream")
+        self._p = pyaudio.PyAudio()
         p = self._p
         #if self.use_speaker == "left":
         #    stream_info = pyaudio.PaMacCoreStreamInfo(channel_map=(0, -1))
@@ -177,6 +179,7 @@ class SpeakerModule(abstract.AbstractConsumingModule):
             #output_host_api_specific_stream_info=stream_info,
             output=True,
         )
+
 
     def shutdown(self):
         """Close the audio stream."""

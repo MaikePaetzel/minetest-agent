@@ -75,7 +75,6 @@ class MicrophoneStream(object):
                     if chunk is None:
                         return
                     data.append(chunk)
-                    print(len(data))
                 except queue.Empty:
                     break
 
@@ -158,7 +157,7 @@ class GoogleASRModule(abstract.AbstractModule):
                     result.is_final,
                 )
             )
-        print("ASR", [predictions, text, stability, confidence, final])
+        print("google_asr.GoogleAsrModule._extract_results:", [predictions, text, stability, confidence, final])
         return predictions, text, stability, confidence, final
 
 
@@ -193,7 +192,7 @@ class GoogleASRModule(abstract.AbstractModule):
                     )
 
                     with MicrophoneStream(RATE, CHUNK) as stream:
-                        print("stream initialized", flush=True)
+                        print("google_asr.GoogleAsrModule.prepare_run.run: microphone stream initialized", flush=True)
                         audio_generator = stream.generator()
                         requests = (
                             speech.StreamingRecognizeRequest(audio_content=content)
@@ -206,13 +205,13 @@ class GoogleASRModule(abstract.AbstractModule):
                         self._produce_predictions_loop(responses)
 
                 except gexceptions.OutOfRange:
-                    print("Got OutOfRange exception: restarting asr processing")
+                    print("google_asr.GoogleAsrModule.prepare_run: got OutOfRange exception: restarting asr processing")
                     pass
 
 
-        print("start thread", flush=True)
+        print("google_asr.GoogleAsrModule.run: creating gspeech thread", flush=True)
         t = threading.Thread(target=run)
-        print("Starting gspeech", flush=True)
+        print("google_asr.GoogleAsrModule.run: created gspeech thread", flush=True)
         t.start()
 
     def shutdown(self):

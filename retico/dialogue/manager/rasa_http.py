@@ -37,19 +37,19 @@ class RasaHTTP(abstract.AbstractModule):
         # curl -XPOST http://localhost:5005/webhooks/rest/webhook -d '{"sender": "test_user","message": "Move that wooden"}
         # action server should then forward intents to bot brain
         text = input_iu.get_text()
-        print(f"Sending text to rasa {text}")
+        print(f"rasa_http.RasaHTTP.on_player_message: sending text to rasa {text}")
         req = self.session.post(self.user_endpoint, json={"sender": self.rasa_user_channel, "message": text})
         req.raise_for_status()
         res = req.json()
         if len(res) == 0:
             return None
         response_text = res[0]["text"]
-        print("Got response from rasa", repr(response_text))
+        print("rasa_http.RasaHTTP.on_player_message: got response from rasa", repr(response_text))
         return response_text
 
     def on_bot_message(self, bot_utterance_iu):
         bot_utterance_name = bot_utterance_iu.get_text()
-        print(f"Sending bot command to rasa {text}")
+        print(f"rasa_http.RasaHTTP.on_bot_message: sending bot command to rasa {text}")
         req_data = {"name": bot_utterance_name, "policy": "string", "confidence": 1}
         req = self.session.post(self.execute_endpoint, json=req_data)
         req.raise_for_status()
@@ -67,7 +67,6 @@ class RasaHTTP(abstract.AbstractModule):
         self.session = requests.Session()
 
     def process_iu(self, input_iu):
-        print(input_iu)
         if isinstance(input_iu, text.common.SpeechRecognitionIU):
             if self.forward_after_final and not input_iu.final:
                 return
