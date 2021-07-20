@@ -48,15 +48,6 @@ class Robo(BaseAgent):
         except:
             return
 
-        print(self.memory._db_read_one(
-            """
-            SELECT *
-            FROM Tasks
-            ORDER BY created DESC
-            LIMIT 1
-            """
-        ))
-
         print("Got from action_input_queue", action)
 
         if action is None:

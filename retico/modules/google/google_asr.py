@@ -2,6 +2,7 @@ import threading
 import pyaudio
 import queue
 from google.cloud import speech
+import google.api_core.exceptions as gexceptions
 from retico.core import abstract
 from retico.core.text.common import SpeechRecognitionIU
 from retico.core.audio.common import AudioIU
@@ -69,7 +70,6 @@ class MicrophoneStream(object):
 
             # Now consume whatever other data's still buffered.
             while True:
-                print("looping")
                 try:
                     chunk = self._buff.get(block=False)
                     if chunk is None:
@@ -86,7 +86,6 @@ class MicrophoneStream(object):
 
 class GoogleASRModule(abstract.AbstractModule):
     """A Module that recognizes speech by utilizing the Google Speech API."""
-
     def __init__(self, language="en-US", nchunks=20, rate=16000, **kwargs):
         """Initialize the GoogleASRModule with the given arguments.
 
@@ -178,33 +177,38 @@ class GoogleASRModule(abstract.AbstractModule):
         pass
 
     def prepare_run(self):
-
         def run():
             language_code = "en-US"  # a BCP-47 language tag
+            while True:
+                try:
+                    client = speech.SpeechClient()
+                    config = speech.RecognitionConfig(
+                        encoding=speech.RecognitionConfig.AudioEncoding.LINEAR16,
+                        sample_rate_hertz=RATE,
+                        language_code=language_code,
+                    )
 
-            client = speech.SpeechClient()
-            config = speech.RecognitionConfig(
-                encoding=speech.RecognitionConfig.AudioEncoding.LINEAR16,
-                sample_rate_hertz=RATE,
-                language_code=language_code,
-            )
+                    streaming_config = speech.StreamingRecognitionConfig(
+                        config=config, interim_results=True
+                    )
 
-            streaming_config = speech.StreamingRecognitionConfig(
-                config=config, interim_results=True
-            )
+                    with MicrophoneStream(RATE, CHUNK) as stream:
+                        print("stream initialized", flush=True)
+                        audio_generator = stream.generator()
+                        requests = (
+                            speech.StreamingRecognizeRequest(audio_content=content)
+                            for content in audio_generator
+                        )
 
-            with MicrophoneStream(RATE, CHUNK) as stream:
-                print("stream initlized", flush=True)
-                audio_generator = stream.generator()
-                requests = (
-                    speech.StreamingRecognizeRequest(audio_content=content)
-                    for content in audio_generator
-                )
+                        responses = client.streaming_recognize(streaming_config, requests)
 
-                responses = client.streaming_recognize(streaming_config, requests)
+                        # Now, put the transcription responses to use.
+                        self._produce_predictions_loop(responses)
 
-                # Now, put the transcription responses to use.
-                self._produce_predictions_loop(responses)
+                except gexceptions.OutOfRange:
+                    print("Got OutOfRange exception: restarting asr processing")
+                    pass
+
 
         print("start thread", flush=True)
         t = threading.Thread(target=run)
