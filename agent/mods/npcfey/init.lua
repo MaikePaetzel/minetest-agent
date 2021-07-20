@@ -42,26 +42,6 @@ local ref = npcf:register_npc("npcfey:npc" ,{
 		  end
       print(self)
     end,
-    on_step = function(self,dtim) 
-      -- Get some initial variable
-      local move_obj = npcf.movement.getControl(self)
-			local max_dist = 15
-      local pos_rob = move_obj.pos
-      local player = minetest.get_player_by_name(self.owner)
-      local p = player:get_pos()
-      -- print(p)
-      p.y = p.y+1
-      -- Not considering the high in the distance
-      local distance = vector.distance(pos_rob, {x=p.x, y=pos_rob.y, z=p.z})
-      -- print(distance)
-      if distance > max_dist then
---        print(self)
-      --  self.object:setpos(p)
-      end
-      -- Always looking the owner
-      move_obj:look_to(p)
-    end,
-    
 
     get_closest_tree = function(self)
       print(self) 
