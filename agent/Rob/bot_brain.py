@@ -1,5 +1,7 @@
 import logging as log
 import miney
+import time
+from enum import Enum
 import atomic_actions as aa
 import lua_actions as la
 import bot_controller as bc
@@ -12,8 +14,17 @@ class DemoBrain:
     This class runs scripted behaviours on the bot object.
     """
 
+    class Compass(Enum):
+        N = 0
+        E = 1
+        S = 2
+        W = 3
+
     def __init__(self, controller=bc.BotController()):
         self.bot = controller
+        # initialize orientation to north
+        self.orientation = self.Compass.N
+        self.run_lua(la.lua_init_compass.format(npc_id=self.bot.id))
         self.run_lua(la.lua_lock_daytime)
 
     def process(self, request):
@@ -32,26 +43,53 @@ class DemoBrain:
             log.exception(e)
             return False
 
+    #################################################
+    # Helper Functions
+    #################################################
+
     def run_lua(self, code):
         return self.bot.lua_runner.run(code)
 
+    def get_bot_yaw(self):
+        return self.run_lua(la.lua_get_yaw.format(npc_id=self.bot.id))
+
+    def get_bot_position(self):
+        return self.run_lua(la.lua_get_position.format(npc_id=self.bot.id))
+
+    def orientation_2_deltas(self, orientation):
+        d_x = 0.0
+        d_z = 0.0
+        if orientation == self.Compass.N.value: # away from sun
+            d_x = 1.0
+        elif orientation == self.Compass.E.value: # left in direction of the sun
+            d_z = -1.0
+        elif orientation == self.Compass.S.value: # towards sun
+            d_x = -1.0
+        elif orientation == self.Compass.W.value: # right in direction of the sun
+            d_z = 1.0
+        
+        return d_x, d_z
+
     #################################################
-    #define more complex behaviours
+    # Complex Behaviours
+    #################################################
 
     def Move(self, direction, distance):
-        distance = float(distance)
-        delta_x = 0.0
-        delta_z = 0.0
-        if direction == "forward": # towards sun
-            delta_x = distance
-        elif direction == "backward": # away from sun
-            delta_x = -distance
-        elif direction == "right": # right in direction of the sun
-            delta_z = distance
-        elif direction == "left": # left in direction of the sun
-            delta_z = -distance
+        d = 0
+        if direction == "left": # 90° counter-clockwise
+            d = -1
+        elif direction == "right": # 90° clockwise
+            d = 1
+        elif direction == "backward": # 180° clockwise
+            d = 2
 
-        bot_pos = self.run_lua(la.lua_get_position.format(npc_id=self.bot.id))
+        # update the brains orientation and get deltas
+        new_orientation = (self.orientation.value + d) % 4
+        self.orientation = self.Compass(new_orientation)
+        d_x, d_z = self.orientation_2_deltas(new_orientation)
+
+        # build the move action
+        bot_pos = self.get_bot_position()
         lua_bot_pos = "{{x={x}, y={y}, z={z}}}".format(
             x=bot_pos['x'],
             y=bot_pos['y'],
@@ -59,9 +97,9 @@ class DemoBrain:
         move_check = la.lua_move_check.format(target=lua_bot_pos)
 
         lua_target_pos = "{{x={x}, y={y}, z={z}}}".format(
-            x=bot_pos['x'] + delta_x,
+            x=bot_pos['x'] + d_x * distance,
             y=bot_pos['y'],
-            z=bot_pos['z'] + delta_z)
+            z=bot_pos['z'] + d_z * distance)
         move = la.lua_move.format(target=lua_target_pos)
 
         move_action = aa.AtomicAction(
@@ -72,27 +110,40 @@ class DemoBrain:
             move_check,
             1.0)
 
+        # build turn action to stay consistent with compass
+        # looking one block further in walking direction
+        lua_look_pos = "{{x={x}, y={y}, z={z}}}".format(
+            x=bot_pos['x'] + d_x * distance + d_x,
+            y=bot_pos['y'],
+            z=bot_pos['z'] + d_z * distance + d_z)
+        turn = la.lua_turn.format(target=lua_look_pos)
+        turn_action = aa.AtomicAction(self.bot.lua_runner, self.bot.id, turn)
+
+        self.bot.add_action(turn_action)
         self.bot.add_action(move_action)
         self.bot.start_execution()
 
     #################################################
     def Turn(self, direction):
-        delta_x = 0.0
-        delta_z = 0.0
-        if direction == "forward": # towards sun
-            delta_x = 1.0
-        elif direction == "backward": # away from sun
-            delta_x = -1.0
-        elif direction == "right": # right in direction of the sun
-            delta_z = 1.0
-        elif direction == "left": # left in direction of the sun
-            delta_z = -1.0
+        d = 0
+        if direction == "left": # 90° counter-clockwise
+            d = -1
+        elif direction == "right": # 90° clockwise
+            d = 1
+        elif direction == "backward": # 180° clockwise
+            d = 2
         
-        bot_pos = self.run_lua(la.lua_get_position.format(npc_id=self.bot.id))
+        # update the brains orientation and get deltas
+        new_orientation = (self.orientation.value + d) % 4
+        self.orientation = self.Compass(new_orientation)
+        d_x, d_z = self.orientation_2_deltas(new_orientation)
+
+        # update the bots ingame orientation
+        bot_pos = self.get_bot_position()
         lua_target_pos = "{{x={x}, y={y}, z={z}}}".format(
-            x=bot_pos['x'] + delta_x,
+            x=bot_pos['x'] + d_x,
             y=bot_pos['y'],
-            z=bot_pos['z'] + delta_z)
+            z=bot_pos['z'] + d_z)
         
         turn = la.lua_turn.format(target=lua_target_pos)
         turn_action = aa.AtomicAction(self.bot.lua_runner, self.bot.id, turn)
@@ -115,114 +166,52 @@ class DemoBrain:
 
     #################################################
     def PlaceBlock(self, type):
-        bot_yaw = self.run_lua(la.lua_get_yaw.format(npc_id=self.bot.id))
-
-        delta_x = 0.0
-        delta_z = 0.0
-        
-        TOL = 1.57 # a bit less than pi/2
-        if isclose(bot_yaw, 0.0, rel_tol= TOL): # towards sun
-            delta_x = 1.0
-        elif isclose(bot_yaw, 3.1415, rel_tol= TOL): # away from sun
-            delta_x = -1.0
-        elif isclose(bot_yaw, 4.7123, rel_tol= TOL): # right in direction of the sun
-            delta_z = 1.0
-        elif isclose(bot_yaw, 1.5707, rel_tol= TOL): # left in direction of the sun
-            delta_z = -1.0
+        dx, dz = self.orientation_2_deltas(self.orientation.value)
 
         # find the floor block in front of the bot
-        bot_pos = self.run_lua(la.lua_get_position.format(npc_id=self.bot.id))
-        lua_target_pos = "{{x={x}, y={y}, z={z}}}".format(
-            x=bot_pos['x'] + delta_x,
-            y=bot_pos['y'],
-            z=bot_pos['z'] + delta_z)
-        
+        bot_pos = self.get_bot_position()
+        target_pos = {
+            'x' : bot_pos['x'] + dx,
+            'y' : bot_pos['y'] - 3.0, # minus bot height
+            'z' : bot_pos['z'] + dz
+            }
         # find the highest position to place a new block
-        height = bot_pos['y']-1.0
-        while self.run_lua(la.lua_get_node.format(pos=lua_target_pos)):
-            height += 1.0
-            lua_target_pos = "{{x={x}, y={y}, z={z}}}".format(
-                x=bot_pos['x'] + delta_x,
-                y=height,
-                z=bot_pos['z'] + delta_z)
-
-        place = la.lua_place_block.format(target=lua_target_pos, block=str(type))
-        place_action = aa.AtomicAction(self.bot.lua_runner, self.bot.id, place)
-
-        self.bot.add_action(place_action)
-        self.bot.start_execution()
+        check_node = self.bot.mt.node.get(target_pos)
+        while check_node['name'] != 'air':
+            target_pos['y'] += 1.0
+            check_node = self.bot.mt.node.get(target_pos)
+        
+        # bascially cheat for now
+        self.bot.mt.node.set(target_pos, 'default:' + str(type))
 
     #################################################
-    def DestroyBlock(self, height):
-        bot_yaw = self.run_lua(la.lua_get_yaw.format(npc_id=self.bot.id))
+    def DestroyBlock(self, height=0):
+        dx, dz = self.orientation_2_deltas(self.orientation.value)
 
-        delta_x = 0.0
-        delta_z = 0.0
+        # find floor block in front of bot
+        bot_pos = self.get_bot_position()
+        target_pos = {
+            'x' : bot_pos['x'] + dx,
+            'y' : bot_pos['y'] - 3.0, # minus bot height
+            'z' : bot_pos['z'] + dz
+            }
+
+        if height: # find block at specified height
+            target_pos['y'] += height
+        else: # find the highest block to destroy
+            check_node = self.bot.mt.node.get(target_pos)
+            while check_node['name'] != 'air':
+                target_pos['y'] += 1.0
+                check_node = self.bot.mt.node.get(target_pos)
+            target_pos['y'] -= 1.0
         
-        TOL = 1.57 # a bit less than pi/2
-        if isclose(bot_yaw, 0.0, rel_tol= TOL): # towards sun
-            delta_x = 1.0
-        elif isclose(bot_yaw, 3.1415, rel_tol= TOL): # away from sun
-            delta_x = -1.0
-        elif isclose(bot_yaw, 4.7123, rel_tol= TOL): # right in direction of the sun
-            delta_z = 1.0
-        elif isclose(bot_yaw, 1.5707, rel_tol= TOL): # left in direction of the sun
-            delta_z = -1.0
+        # TODO: check if theres air already or 
+        # if we are digging into ground
+        # -> throw an error
 
-        # find the floor block in front of the bot
-        bot_pos = self.run_lua(la.lua_get_position.format(npc_id=self.bot.id))
-        lua_target_pos = "{{x={x}, y={y}, z={z}}}".format(
-            x=bot_pos['x'] + delta_x,
-            y=bot_pos['y'],
-            z=bot_pos['z'] + delta_z)
-        
-        # find the highest position to break block
-        height = bot_pos['y']
-        while self.run_lua(la.lua_get_node.format(pos=lua_target_pos)):
-            height += 1.0
-            lua_target_pos = "{{x={x}, y={y}, z={z}}}".format(
-                x=bot_pos['x'] + delta_x,
-                y=height,
-                z=bot_pos['z'] + delta_z)
-
-
-        lua_target_pos = "{{x={x}, y={y}, z={z}}}".format(
-                x=bot_pos['x'] + delta_x,
-                y=height-1,
-                z=bot_pos['z'] + delta_z)
-        breaking = la.lua_break_block.format(target=lua_target_pos)
-        breaking_action = aa.AtomicAction(self.bot.lua_runner, self.bot.id, breaking)
-
-        self.bot.add_action(breaking_action)
-        self.bot.start_execution()
-
-
-    def DestroyBlockPrecise(self, height):
-        bot_yaw = self.run_lua(la.lua_get_yaw.format(npc_id=self.bot.id))
-
-        delta_x = 0.0
-        delta_z = 0.0
-        
-        TOL = 1.57 # a bit less than pi/2
-        if isclose(bot_yaw, 0.0, rel_tol= TOL): # towards sun
-            delta_x = 1.0
-        elif isclose(bot_yaw, 3.1415, rel_tol= TOL): # away from sun
-            delta_x = -1.0
-        elif isclose(bot_yaw, 4.7123, rel_tol= TOL): # right in direction of the sun
-            delta_z = 1.0
-        elif isclose(bot_yaw, 1.5707, rel_tol= TOL): # left in direction of the sun
-            delta_z = -1.0
-
-        # find the floor block in front of the bot
-        bot_pos = self.run_lua(la.lua_get_position.format(npc_id=self.bot.id))
-
-
-        lua_target_pos = "{{x={x}, y={y}, z={z}}}".format(
-                x=bot_pos['x'] + delta_x,
-                y=bot_pos['y'] + height,
-                z=bot_pos['z'] + delta_z)
-        breaking = la.lua_break_block.format(target=lua_target_pos)
-        breaking_action = aa.AtomicAction(self.bot.lua_runner, self.bot.id, breaking)
-
-        self.bot.add_action(breaking_action)
-        self.bot.start_execution()
+        # make it look like rob is mining
+        # bascially cheat for now
+        self.run_lua(la.lua_toggle_mining)
+        time.sleep(0.5)
+        self.bot.mt.node.set(target_pos, 'air')
+        self.run_lua(la.lua_toggle_mining)

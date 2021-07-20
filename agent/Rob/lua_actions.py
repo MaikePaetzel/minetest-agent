@@ -116,6 +116,16 @@ minetest.register_globalstep(function(dtime)
 	end
 end)
 """
+
+# initializes the bot to look north
+lua_init_compass = """
+local npc = npcf:get_luaentity("{npc_id}")
+local move_obj = npcf.movement.getControl(npc)
+local north = npc.object:getpos()
+north.x = north.x+1
+move_obj:look_to(north)
+"""
+
 # flips the mining animation on/off
 lua_toggle_mining = """
 local npc = npcf:get_luaentity("{npc_id}")
