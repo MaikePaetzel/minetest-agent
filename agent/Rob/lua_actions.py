@@ -1,4 +1,6 @@
-
+#####################_simple_commands_############################
+# executable actions for the bot object
+# starts the mining animation
 lua_mine = """
 move_obj:mine()
 return true
@@ -10,50 +12,29 @@ move_obj:mine_stop()
 return true
 """
 
-# flips the mining animation on/off
-lua_toggle_mining = """
-if move_obj:is_mining() then
-    move_obj:mine_stop()
-else
-    move_obj:mine()
-end
-return true
-"""
-
 # turns towards a position
 # will need to be formatted
 lua_turn = """
 move_obj:look_to({target})
 return true
 """
-# places a block at the highest
+
+# places a block at the given position
+# will need to be formatted
 lua_place_block = """
-local p = npc.object:get_pos()
-
 local new_p = {target}
-print(new_p['x'] .. ' ' .. new_p['y'] .. '  ' .. new_p['z'])
-
 minetest.set_node(new_p, {{name="default:{block}"}})
 return true
 """
 
-#####################_auxiliary_functions_############################
-# can be sent directly to the game
-# to get values we need to complete other commands
-
-# returns the current coordinates of bot object
+# break block at the given position
 # will need to be formatted
-lua_get_position = """
-local npc = npcf:get_luaentity("{npc_id}")
-local move_obj = npcf.movement.getControl(npc)
-local p = npc.object:get_pos()
-print(p['x'] .. ' y = ' .. p['y'] .. '  ' .. p['z'])
-
-return p
+lua_break_block = """
+local new_p = {target}
+minetest.remove_node(new_p)
+return true
 """
 
-# returns the current coordinates of bot object
-# will need to be formatted
 lua_get_orientation_to_sun = """
 local npc = npcf:get_luaentity("{npc_id}")
 local move_obj = npcf.movement.getControl(npc)
@@ -63,36 +44,6 @@ local z = move_obj.pos.z
 local sun = {{x=sun_x, y=y, z=z}}
 local yaw = npcf:get_face_direction(move_obj.pos, sun)
 return yaw
-"""
-
-# returns the current node at pos
-# will need to be formatted
-lua_get_nodes = """
-
-local npc = npcf:get_luaentity("{npc_id}")
-local move_obj = npcf.movement.getControl(npc)
-local pos = move_obj.pos
-
--- find a value in a list
-local rval = {{}}
-for i=pos.x-10, pos.x+10 do
-    for j=pos.y-10, pos.y+10 do
-        for k=pos.z-10, pos.z+10 do
-            rval[{{x=i,y=j,z=k}}] = minetest.get_node_or_nil({{x=i,y=j,z=k}})
-        end
-    end
-end
-return rval
-"""
-
-
-lua_get_node = """
-local node = minetest.get_node_or_nil({pos})
-if node == nil then
-    return true
-end
-print(node.name)
-return node.name ~= 'air'
 """
 
 #####################_commands_with_check_############################
@@ -161,14 +112,62 @@ else
 end
 """
 
+#####################_auxiliary_functions_############################
+# can be sent directly to the game
+# to get values we need to complete other commands
 
+# sets the sun to always be in the sky
+lua_lock_daytime = """
+local timer = 0
+minetest.register_globalstep(function(dtime)
+	timer = timer + dtime;
+	if timer >= 5 then
+		minetest.set_timeofday(0.7)
+		timer = 0
+	end
+end)
+"""
 
-##### Break block
-lua_break_block = """
+# initializes the bot to look north
+lua_init_compass = """
+local npc = npcf:get_luaentity("{npc_id}")
+local move_obj = npcf.movement.getControl(npc)
+local north = npc.object:getpos()
+north.x = north.x+1
+move_obj:look_to(north)
+"""
 
-local p = npc.object:get_pos()
+# flips the mining animation on/off
+# will need to be formatted
+lua_toggle_mining = """
+local npc = npcf:get_luaentity("{npc_id}")
+local move_obj = npcf.movement.getControl(npc)
+if move_obj.is_mining then
+    move_obj:mine_stop()
+else
+    move_obj:mine()
+end
+"""
 
-local new_p = {target}
-minetest.remove_node(new_p)
-return true
+# returns the current coordinates of bot object
+# will need to be formatted
+lua_get_position = """
+local npc = npcf:get_luaentity("{npc_id}")
+return npc.object:getpos()
+"""
+
+# returns the current coordinates of bot object
+# will need to be formatted
+lua_get_yaw = """
+local npc = npcf:get_luaentity("{npc_id}")
+return npc.object:getyaw()
+"""
+
+lua_get_node = """
+local node = minetest.get_node_or_nil({pos})
+if node == nil then
+    return true
+end
+print(node.name)
+return node.name ~= 'air'
 """

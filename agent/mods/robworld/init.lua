@@ -1,6 +1,7 @@
 local DIRT_LAYER = 1 -- 1 + Dirt layer
-local STONE_STACK = true
+local STONE_STACK = false
 local STONE_STACK_SIZE = 2
+local WALL = true
 math.randomseed(os.time())
 
 minetest.register_chatcommand("rw", {
@@ -154,10 +155,72 @@ minetest.register_chatcommand("rw", {
                         end
                     end
 
+                    local large_enough = true
+                    if WALL then
+                        if pos_t['x'] - 4 < pos_f['x'] then
+                            print('Square too small x ')
+                            large_enough = false
+                        end
+                        local x = pos_t['x'] - 4
+
+                        local y = pos_f['y'] + DIRT_LAYER + 1
+
+                        if pos_t['z'] - 4 < pos_f['z'] then
+                            print('Square too small z')
+                            large_enough = false
+                        end
+                        local z = pos_t['z'] - 4
+
+                        if large_enough then
+                            local mem = 1
+                            for s_x = x - 2, x do
+                                for s_y = y, y + 2 do
+                                    local new_pos = {x = s_x, y = s_y, z = z}
+                                    if mem % 2 == 0 then
+                                        minetest.set_node(new_pos,
+                                                          minetest.registered_nodes['default:stone'])
+                                    else
+                                        minetest.set_node(new_pos,
+                                                          minetest.registered_nodes['default:wood'])
+                                    end
+                                    mem = mem + 1
+
+                                end
+                            end
+                        end
+
+                    end
+
+                    local new_pos = {
+                        x = pos_f['x'] + 6,
+                        y = pos_f['y'] + 1,
+                        z = pos_t['z'] - 4
+                    }
+
+                    minetest.set_node(new_pos,
+                                      minetest.registered_nodes['wool:red'])
+
+                    new_pos = {
+                        x = pos_f['x'] + 4,
+                        y = pos_f['y'] + 1,
+                        z = pos_t['z'] - 4
+                    }
+
+                    minetest.set_node(new_pos,
+                                      minetest.registered_nodes['wool:red'])
+                    new_pos = {
+                        x = pos_f['x'] + 5,
+                        y = pos_f['y'] + 1,
+                        z = pos_t['z'] - 4
+                    }
+
+                    minetest.set_node(new_pos,
+                                      minetest.registered_nodes['wool:red'])
+
                     -- Teleport the player and rob
                     local player = minetest.get_player_by_name(name)
                     player:set_pos({
-                        x = pos_f['x'] + 2,-
+                        x = pos_f['x'] + 2,
                         y = pos_t['y'] + 2,
                         z = pos_f['z'] + 2
                     })
