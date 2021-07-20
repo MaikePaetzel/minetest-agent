@@ -14,6 +14,7 @@ class DemoBrain:
 
     def __init__(self, controller=bc.BotController()):
         self.bot = controller
+        self.run_lua(la.lua_lock_daytime)
 
     def process(self, request):
         """
@@ -21,7 +22,6 @@ class DemoBrain:
         the last ones that are added will be 
         will be executed first.
         """
-        self.bot.mt.time_of_day = 0.7
         try:
             print("Attempting to execute command:")
             exec("self." + str(request))

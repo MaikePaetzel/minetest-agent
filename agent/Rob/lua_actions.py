@@ -104,6 +104,18 @@ end
 #####################_auxiliary_functions_############################
 # can be sent directly to the game
 # to get values we need to complete other commands
+
+# sets the sun to always be in the sky
+lua_lock_daytime = """
+local timer = 0
+minetest.register_globalstep(function(dtime)
+	timer = timer + dtime;
+	if timer >= 5 then
+		minetest.set_timeofday(0.7)
+		timer = 0
+	end
+end)
+"""
 # flips the mining animation on/off
 lua_toggle_mining = """
 local npc = npcf:get_luaentity("{npc_id}")
