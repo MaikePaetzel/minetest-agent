@@ -1,8 +1,11 @@
 import logging as log
 import miney
-import atomic_actions as aa
-import lua_actions as la
-import bot_controller as bc
+import agent.Rob.atomic_actions as aa
+import agent.Rob.lua_actions as la
+import agent.Rob.bot_controller as bc
+# import atomic_actions as aa
+# import lua_actions as la
+# import bot_controller as bc
 from math import isclose
 
 class DemoBrain:
@@ -138,9 +141,10 @@ class DemoBrain:
             z=bot_pos['z'] + delta_z)
 
         # find the highest position to place a new block
-        height = bot_pos['y']-1.0
+        height = bot_pos['y']-3.0
         while self.run_lua(la.lua_get_node.format(pos=lua_target_pos)):
             height += 1.0
+            # print(height)
             lua_target_pos = "{{x={x}, y={y}, z={z}}}".format(
                 x=bot_pos['x'] + delta_x,
                 y=height,
@@ -154,4 +158,75 @@ class DemoBrain:
 
     #################################################
     def DestroyBlock(self, height):
-        pass
+        bot_yaw = self.run_lua(la.lua_get_yaw.format(npc_id=self.bot.id))
+
+        delta_x = 0.0
+        delta_z = 0.0
+
+        TOL = 1.57 # a bit less than pi/2
+        if isclose(bot_yaw, 0.0, rel_tol= TOL): # towards sun
+            delta_x = 1.0
+        elif isclose(bot_yaw, 3.1415, rel_tol= TOL): # away from sun
+            delta_x = -1.0
+        elif isclose(bot_yaw, 4.7123, rel_tol= TOL): # right in direction of the sun
+            delta_z = 1.0
+        elif isclose(bot_yaw, 1.5707, rel_tol= TOL): # left in direction of the sun
+            delta_z = -1.0
+
+        # find the floor block in front of the bot
+        bot_pos = self.run_lua(la.lua_get_position.format(npc_id=self.bot.id))
+        lua_target_pos = "{{x={x}, y={y}, z={z}}}".format(
+            x=bot_pos['x'] + delta_x,
+            y=bot_pos['y'],
+            z=bot_pos['z'] + delta_z)
+
+        # find the highest position to break block
+        height = bot_pos['y']
+        while self.run_lua(la.lua_get_node.format(pos=lua_target_pos)):
+            height += 1.0
+            lua_target_pos = "{{x={x}, y={y}, z={z}}}".format(
+                x=bot_pos['x'] + delta_x,
+                y=height,
+                z=bot_pos['z'] + delta_z)
+
+
+        lua_target_pos = "{{x={x}, y={y}, z={z}}}".format(
+                x=bot_pos['x'] + delta_x,
+                y=height-1,
+                z=bot_pos['z'] + delta_z)
+        breaking = la.lua_break_block.format(target=lua_target_pos)
+        breaking_action = aa.AtomicAction(self.bot.lua_runner, self.bot.id, breaking)
+
+        self.bot.add_action(breaking_action)
+        self.bot.start_execution()
+
+
+    def DestroyBlockPrecise(self, height):
+        bot_yaw = self.run_lua(la.lua_get_yaw.format(npc_id=self.bot.id))
+
+        delta_x = 0.0
+        delta_z = 0.0
+
+        TOL = 1.57 # a bit less than pi/2
+        if isclose(bot_yaw, 0.0, rel_tol= TOL): # towards sun
+            delta_x = 1.0
+        elif isclose(bot_yaw, 3.1415, rel_tol= TOL): # away from sun
+            delta_x = -1.0
+        elif isclose(bot_yaw, 4.7123, rel_tol= TOL): # right in direction of the sun
+            delta_z = 1.0
+        elif isclose(bot_yaw, 1.5707, rel_tol= TOL): # left in direction of the sun
+            delta_z = -1.0
+
+        # find the floor block in front of the bot
+        bot_pos = self.run_lua(la.lua_get_position.format(npc_id=self.bot.id))
+
+
+        lua_target_pos = "{{x={x}, y={y}, z={z}}}".format(
+                x=bot_pos['x'] + delta_x,
+                y=bot_pos['y'] + height,
+                z=bot_pos['z'] + delta_z)
+        breaking = la.lua_break_block.format(target=lua_target_pos)
+        breaking_action = aa.AtomicAction(self.bot.lua_runner, self.bot.id, breaking)
+
+        self.bot.add_action(breaking_action)
+        self.bot.start_execution()
