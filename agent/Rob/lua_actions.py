@@ -127,6 +127,7 @@ move_obj:look_to(north)
 """
 
 # flips the mining animation on/off
+# will need to be formatted
 lua_toggle_mining = """
 local npc = npcf:get_luaentity("{npc_id}")
 local move_obj = npcf.movement.getControl(npc)

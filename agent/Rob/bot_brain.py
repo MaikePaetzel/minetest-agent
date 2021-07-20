@@ -211,7 +211,7 @@ class DemoBrain:
 
         # make it look like rob is mining
         # bascially cheat for now
-        self.run_lua(la.lua_toggle_mining)
+        self.run_lua(la.lua_toggle_mining.format(npc_id=self.bot.id))
         time.sleep(0.5)
         self.bot.mt.node.set(target_pos, 'air')
-        self.run_lua(la.lua_toggle_mining)
+        self.run_lua(la.lua_toggle_mining.format(npc_id=self.bot.id))
