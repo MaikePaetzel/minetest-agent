@@ -51,7 +51,7 @@ return p
 
 # returns the current coordinates of bot object
 # will need to be formatted
-lua_get_yaw = """
+lua_get_orientation_to_sun = """
 local npc = npcf:get_luaentity("{npc_id}")
 local move_obj = npcf.movement.getControl(npc)
 local sun_x = (move_obj.pos.x + 1)
@@ -64,7 +64,25 @@ return yaw
 
 # returns the current node at pos
 # will need to be formatted
-lua_get_node = """
+lua_get_nodes = """
+
+local npc = npcf:get_luaentity("{npc_id}")
+local move_obj = npcf.movement.getControl(npc)
+local pos = move_obj.pos
+
+-- find a value in a list
+local rval = {{}}
+for i=pos.x-10, pos.x+10 do
+    for j=pos.y-10, pos.y+10 do
+        for k=pos.z-10, pos.z+10 do
+            rval[{{x=i,y=j,z=k}}] = minetest.get_node_or_nil({{x=i,y=j,z=k}})
+        end
+    end
+end
+return rval
+"""
+
+luad_get_node = """
 return minetest.get_node_or_nil({pos})
 """
 
