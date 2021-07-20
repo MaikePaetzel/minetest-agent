@@ -12,60 +12,27 @@ move_obj:mine_stop()
 return true
 """
 
-# flips the mining animation on/off
-lua_toggle_mining = """
-if move_obj:is_mining() then
-    move_obj:mine_stop()
-else
-    move_obj:mine()
-end
-return true
-"""
-
 # turns towards a position
 # will need to be formatted
 lua_turn = """
 move_obj:look_to({target})
 return true
 """
-# places a block at the highest 
+
+# places a block at the given position
+# will need to be formatted
 lua_place_block = """
-local p = move_obj.pos
 local new_p = {target}
 minetest.set_node(new_p, {{name="default:{block}"}})
 return true
 """
 
-#####################_auxiliary_functions_############################
-# can be sent directly to the game
-# to get values we need to complete other commands
-
-# returns the current coordinates of bot object
+# break block at the given position
 # will need to be formatted
-lua_get_position = """
-local npc = npcf:get_luaentity("{npc_id}")
-local move_obj = npcf.movement.getControl(npc)
-local p = move_obj.pos
-return p
-"""
-
-# returns the current coordinates of bot object
-# will need to be formatted
-lua_get_yaw = """
-local npc = npcf:get_luaentity("{npc_id}")
-local move_obj = npcf.movement.getControl(npc)
-local sun_x = (move_obj.pos.x + 1)
-local y = move_obj.pos.y
-local z = move_obj.pos.z
-local sun = {{x=sun_x, y=y, z=z}}
-local yaw = npcf:get_face_direction(move_obj.pos, sun)
-return yaw
-"""
-
-# returns the current node at pos
-# will need to be formatted
-lua_get_node = """
-return minetest.get_node_or_nil({pos})
+lua_break_block = """
+local new_p = {target}
+minetest.remove_node(new_p)
+return true
 """
 
 #####################_commands_with_check_############################
@@ -132,4 +99,32 @@ if d < distance then
 else
     return 0
 end
+"""
+
+#####################_auxiliary_functions_############################
+# can be sent directly to the game
+# to get values we need to complete other commands
+# flips the mining animation on/off
+lua_toggle_mining = """
+local npc = npcf:get_luaentity("{npc_id}")
+local move_obj = npcf.movement.getControl(npc)
+if move_obj.is_mining then
+    move_obj:mine_stop()
+else
+    move_obj:mine()
+end
+"""
+
+# returns the current coordinates of bot object
+# will need to be formatted
+lua_get_position = """
+local npc = npcf:get_luaentity("{npc_id}")
+return npc.object:getpos()
+"""
+
+# returns the current coordinates of bot object
+# will need to be formatted
+lua_get_yaw = """
+local npc = npcf:get_luaentity("{npc_id}")
+return npc.object:getyaw()
 """
