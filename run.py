@@ -16,7 +16,7 @@ from retico.core.audio.io import SpeakerModule, MicrophoneModule
 from retico.dialogue.manager.rasa_http import RasaHTTP
 from retico.modules.google.google_asr import GoogleASRModule
 from retico.modules.gui_input.gui_input import GuiInputModule
-from retico.modules.mozilla_tts.mozilla_tts import MozillaTTS
+from retico.modules.mozilla_tts.mozilla_tts import MozillaTTSHTTP, get_synthesizer_endpoint
 
 from agent.droidlet_agent import MinetestWorld, Robo
 import os
@@ -26,7 +26,7 @@ import os
 def run_retico():
     m_asr = GoogleASRModule()
     m_rasa = RasaHTTP()
-    m_tts = MozillaTTS()
+    m_tts = MozillaTTSHTTP()
     m_speaker = SpeakerModule(m_tts.sample_rate)
 
     m_asr.subscribe(m_rasa)
@@ -46,12 +46,18 @@ def run_retico():
 
 def main():
 
+    # run text synthesis server
 
-    # minecraft server running
-    # TODO
+    def run_synthesis_server_webapp():
+        logging.basicConfig(level=logging.DEBUG)
+        synthesizer_endpoint = get_synthesizer_endpoint()
+        web.run_app(synthesizer_endpoint, port=5060, print=logging.info)
 
-    # miney running
-    # TODO
+    p_synthesizer = Process(target=run_synthesis_server_webapp, daemon=True)
+    p_synthesizer.start()
+    print("run.main: started tts synthesis endpoint")
+
+    # start rasa and action server
 
     action_server_to_brain_queue = Queue()
     action_server = get_action_endpoint(action_server_to_brain_queue)
@@ -65,7 +71,7 @@ def main():
 
     p_rasa_actions = Process(target=run_action_server_webapp, daemon=True)
     p_rasa_actions.start()
-    logging.info("Started action server")
+    print("run.main: started action server")
 
     # run rasa dialogue manager
 
@@ -81,15 +87,15 @@ def main():
 
     p_rasa = Process(target=run_rasa, daemon=True)
     p_rasa.start()
-    print("Starting rasa")
+    print("run.main: starting rasa")
 
     # wait for rasa to load
 
     while True:
         try:
-            print("Waiting for rasa")
+            print("run.main: waiting for rasa")
             requests.get("http://localhost:5005")
-            print("Rasa is ready")
+            print("run.main: rasa is ready")
             break
         except Exception:
             time.sleep(3)
@@ -99,7 +105,7 @@ def main():
     time.sleep(5)
     p_retico = Process(target=run_retico, daemon=True)
     p_retico.start()
-    logging.info("Started retico")
+    print("run.main: started retico")
 
     # agent running
 
@@ -113,17 +119,10 @@ def main():
             #print("Stepping agent")
             agent.step()
         except Exception as e:
-            print("Got exception")
+            print("run.main: got exception")
             print(e)
             agent.handle_exception(e)
         time.sleep(1)
-    #try:
-    #    while True:
-    #        if not action_server_to_brain_queue.empty():
-    #            print(action_server_to_brain_queue.get_nowait())
-    #        time.sleep(2)
-    #except KeyboardInterrupt:
-    #    pass
 
 
 if __name__ == "__main__":
