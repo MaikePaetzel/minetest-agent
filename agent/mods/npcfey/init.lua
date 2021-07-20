@@ -92,10 +92,12 @@ local ref = npcf:register_npc("npcfey:npc" ,{
           
           for chunk_x=current_point.x-radius,current_point.x+radius do
            for chunk_z=current_point.z-radius,current_point.z+radius do
+           for chunk_y=current_point.y-2,current_point.y+2 do
+
             local node = minetest.get_node({x=chunk_x, y=current_point.y, z=chunk_z})
-            print(node.name .. " at position " .. chunk_x, current_point.y,chunk_z )
-            if node.name == "default:dirt" then
-              move_obj:walk({x=chunk_x, y=current_point.y, z=chunk_z}, 2)
+            -- print(node.name .. " at position " .. chunk_x, current_point.y,chunk_z )
+            if node.name == "wool:red" then
+              move_obj:walk({x=chunk_x, y=chunk_y, z=chunk_z}, 2)
               return
             end
            end
