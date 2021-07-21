@@ -13,8 +13,6 @@ import queue
 #sys.path.append(REPO_PATH)
 #import bot_brain as b
 
-#import sys
-# REPO_PATH = '/your/repo/path/minetest-agent/agent/rob'
 
 
 

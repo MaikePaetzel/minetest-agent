@@ -1,5 +1,11 @@
 #####################_simple_commands_############################
 # executable actions for the bot object
+# stops the bot from doing anything
+lua_stop = """
+move_obj:stop()
+return true
+"""
+
 # starts the mining animation
 lua_mine = """
 move_obj:mine()
@@ -62,7 +68,7 @@ return true
 lua_come_here_check = """
 local distance = 2 -- how close to get to player
 
-if move_obj._path == nil then
+if not move_obj._path or not move_obj._path[1] then
     return 2
 end
 
@@ -70,10 +76,7 @@ local player = minetest.get_player_by_name(npc.owner)
 local p = player:get_pos()
 local n = vector.round(move_obj.pos)
 
--- take euclidean distance
-local d = ((p.x-n.x) ^ 2 + (p.z-n.z) ^ 2) ^ 0.5
-
-if d < distance then
+if vector.distance(p, n) < distance then
     return 1
 else
     return 0
@@ -93,19 +96,16 @@ return true
 
 # will need to be formatted
 lua_move_check = """
-local distance = 0.25-- how close to get to new position
+local distance = 0.4 -- how close to get to new position
 
-if move_obj._path == nil then
+if not move_obj._path or not move_obj._path[1] then
     return 2
 end
 
 local p = {target}
 local n = vector.round(move_obj.pos)
 
--- take euclidean distance
-local d = ((p.x-n.x) ^ 2 + (p.z-n.z) ^ 2) ^ 0.5
-
-if d < distance then
+if vector.distance(p, n) < distance then
     return 1
 else
     return 0
@@ -129,6 +129,7 @@ end)
 """
 
 # initializes the bot to look north
+# will need to be formatted
 lua_init_compass = """
 local npc = npcf:get_luaentity("{npc_id}")
 local move_obj = npcf.movement.getControl(npc)
@@ -170,4 +171,14 @@ if node == nil then
 end
 print(node.name)
 return node.name ~= 'air'
+"""
+# returns true if the bot is currently moving
+# will need to be formatted
+lua_bot_moving = """
+local npc = npcf:get_luaentity("{npc_id}")
+local move_obj = npcf.movement.getControl(npc)
+if not move_obj._path or not move_obj._path[1] then
+    return false
+end
+return true
 """

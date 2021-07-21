@@ -37,12 +37,33 @@ local ref = npcf:register_npc("npcfey:npc" ,{
       self.mo_printed = false
     end,
     on_rightclick = function(self, clicker)
-		  local name = clicker:get_player_name()
-		  if name == self.owner then
-			  npcf:show_formspec(name, self.npc_id, nil)
-		  end
+          local name = clicker:get_player_name()
+          if name == self.owner then
+              npcf:show_formspec(name, self.npc_id, nil)
+          end
       print(self)
     end,
+    on_step = function(self,dtim)
+      -- Get some initial variable
+      local move_obj = npcf.movement.getControl(self)
+        move_obj.pos = self.object:get_pos()
+            local max_dist = 15
+      local pos_rob = move_obj.pos
+      local player = minetest.get_player_by_name(self.owner)
+      local p = player:get_pos()
+      -- print(p)
+      p.y = p.y+1
+      -- Not considering the high in the distance
+      local distance = vector.distance(pos_rob, {x=p.x, y=pos_rob.y, z=p.z})
+      -- print(distance)
+      if distance > max_dist then
+       print(self)
+--        self.object:setpos(p)
+      end
+      -- Always looking the owner
+--       move_obj:look_to(p)
+    end,
+
 
     get_closest_tree = function(self)
       print(self)
@@ -65,7 +86,6 @@ local ref = npcf:register_npc("npcfey:npc" ,{
       local tree_dist = {}
       for i=further_min,further_max do
         -- local node = minetest.get_node(pos)
-        -- TODO : Fixing radius
         for j=further_min,further_max do
           print('Changing ')
           current_point.x = origin_point.x + i*radius*2
@@ -73,12 +93,10 @@ local ref = npcf:register_npc("npcfey:npc" ,{
 
           for chunk_x=current_point.x-radius,current_point.x+radius do
            for chunk_z=current_point.z-radius,current_point.z+radius do
-           for chunk_y=current_point.y-2,current_point.y+2 do
-
             local node = minetest.get_node({x=chunk_x, y=current_point.y, z=chunk_z})
-            -- print(node.name .. " at position " .. chunk_x, current_point.y,chunk_z )
+            print(node.name .. " at position " .. chunk_x, current_point.y,chunk_z )
             if node.name == "wool:red" then
-              move_obj:walk({x=chunk_x, y=chunk_y, z=chunk_z}, 2)
+              move_obj:walk({x=chunk_x, y=current_point.y, z=chunk_z}, 2)
               return
             end
            end
