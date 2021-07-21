@@ -57,18 +57,15 @@ return true
 lua_come_here_check = """
 local distance = 2 -- how close to get to player
 
-if move_obj._path == nil then
+if not move_obj._path or not move_obj._path[1] then
     return 2
 end
 
 local player = minetest.get_player_by_name(npc.owner)
 local p = player:get_pos()
-local n = vector.round(move_obj.pos) 
+local n = vector.round(move_obj.pos)
 
--- take euclidean distance
-local d = ((p.x-n.x) ^ 2 + (p.z-n.z) ^ 2) ^ 0.5
-
-if d < distance then
+if vector.distance(p, n) < distance then
     return 1
 else
     return 0
@@ -88,19 +85,16 @@ return true
 
 # will need to be formatted
 lua_move_check = """
-local distance = 0.25-- how close to get to new position
+local distance = 0.4 -- how close to get to new position
 
-if move_obj._path == nil then
+if not move_obj._path or not move_obj._path[1] then
     return 2
 end
 
 local p = {target}
 local n = vector.round(move_obj.pos)
 
--- take euclidean distance
-local d = ((p.x-n.x) ^ 2 + (p.z-n.z) ^ 2) ^ 0.5
-
-if d < distance then
+if vector.distance(p, n) < distance then
     return 1
 else
     return 0
