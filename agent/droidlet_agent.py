@@ -60,17 +60,21 @@ class Robo(BaseAgent):
         else:
             bot_state = self.world.get_state()
             try:
-                if isinstance(action, actions.ComeHere):
-                    atomic_action = atomic_actions.AtomicAction.come_here(self, bot_state, self.world)
-                elif isinstance(action, actions.Move):
-                    atomic_action = atomic_actions.AtomicAction.from_move(self, action, bot_state, self.world)
-                elif isinstance(action, actions.DestroyBlock):
-                    atomic_action = atomic_actions.AtomicAction.from_destroy_block(self, action, bot_state, self.world)
-                elif isinstance(action, actions.PlaceBlock):
-                    atomic_action = atomic_actions.AtomicAction.from_place_block(self, action, bot_state, self.world)
-                elif isinstance(action, actions.Turn):
-                    atomic_action = atomic_actions.AtomicAction.from_turn(self, action, bot_state, self.world)
-                else:
+                try:
+                    if isinstance(action, actions.ComeHere):
+                        atomic_action = atomic_actions.AtomicAction.come_here(self, bot_state, self.world)
+                    elif isinstance(action, actions.Move):
+                        atomic_action = atomic_actions.AtomicAction.from_move(self, action, bot_state, self.world)
+                    elif isinstance(action, actions.DestroyBlock):
+                        atomic_action = atomic_actions.AtomicAction.from_destroy_block(self, action, bot_state, self.world)
+                    elif isinstance(action, actions.PlaceBlock):
+                        atomic_action = atomic_actions.AtomicAction.from_place_block(self, action, bot_state, self.world)
+                    elif isinstance(action, actions.Turn):
+                        atomic_action = atomic_actions.AtomicAction.from_turn(self, action, bot_state, self.world)
+                    else:
+                        return
+                except:
+                    print("droidlet_agent.Robo.controller_step: error handling action from rasa", action)
                     return
 
                 print("droidlet_agent.Robo.controller_step: pushing action to task stack", atomic_action)
@@ -130,6 +134,8 @@ class BotState:
     orientation_to_sun: float
     inventory: Dict[str, int]
     nearby_blocks_grid: Dict[Any, Any]
+    yaw: Any
+    compass_orientation: Any
 
 
 from enum import Enum
@@ -201,6 +207,9 @@ class MinetestWorld:
             # TODO: raise exceptions
             print("droidlet_agent.MinetestWorld.__init__: Initializing Rob FAILED")
 
+        self.lua_runner.run(la.lua_init_compass.format(npc_id=bot_id))
+        self.bot_orientation = atomic_actions.Compass.N
+
     def step(self):
         self.run_lua("return minetest.set_timeofday(0.5)", do_print=False)
 
@@ -213,6 +222,7 @@ class MinetestWorld:
     def get_state(self):
         position = self.run_lua(la.lua_get_position.format(npc_id=self.id))
         orientation_to_sun = self.run_lua(la.lua_get_orientation_to_sun.format(npc_id=self.id))
+        yaw = self.run_lua(la.lua_get_yaw.format(npc_id=self.id))
         inventory = {}
         #nearby_blocks_grid = self.run_lua(la.lua_get_nodes(npc_id=self.bot_id))
         rval = BotState(
@@ -220,8 +230,11 @@ class MinetestWorld:
             position,
             orientation_to_sun,
             inventory,
-            None #nearby_blocks_grid
+            None, #nearby_blocks_grid
+            yaw,
+            self.bot_orientation
         )
+        print("droidlet_agent.MinetestWorld.get_state: bot state", rval)
         return rval
 
     def handle_exception(self, e):

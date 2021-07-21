@@ -108,7 +108,10 @@ class ActionSendBotBrain(Action):
             repeat_count_move = tracker.get_slot("repeat_count_move")
 
             if repeat_count_move:
-                repeat_count_move = w2n.word_to_num(repeat_count_move)
+                try:
+                    repeat_count_move = w2n.word_to_num(repeat_count_move)
+                except ValueError:
+                    pass
 
             request = Move(relative_direction_move, repeat_count_move)
 

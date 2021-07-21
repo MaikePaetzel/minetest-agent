@@ -122,7 +122,7 @@ def main():
             print("run.main: got exception")
             print(e)
             agent.handle_exception(e)
-        time.sleep(1)
+        time.sleep(.2)
 
 
 if __name__ == "__main__":
