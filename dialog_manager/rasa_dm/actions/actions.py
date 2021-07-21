@@ -74,8 +74,6 @@ class ActionSendBotBrain(Action):
 
             return [SlotSet("reference_object_place_block", None), SlotSet("repeat_count_place_block", None), SlotSet("block_type_place_block", None)]
 
-
-
         if tracker.get_intent_of_latest_message() == "ask_destroy_block":
         
             tower_height_destroy_block = tracker.get_slot("tower_height_destroy_block")
@@ -123,11 +121,8 @@ class ActionSendBotBrain(Action):
             if self.rob.process(request):
                 dispatcher.utter_message(text=f"I'll move {repeat_count_move} blocks {relative_direction_move}")
             else:
-                dispatcher.utter_message(text=f"I think you want me to move but some parameters are wrong.")                        
-            return [SlotSet("relative_direction_move", None), SlotSet("repeat_count_move", None), SlotSet("reference_object_move", None)]
+                dispatcher.utter_message(text=f"I think you want me to move but some parameters are wrong.")
 
-            self.rob.process(request)
-            
             # if action fullfilled or started
             return [SlotSet("relative_direction_move", None), SlotSet("repeat_count_move", None)]
 

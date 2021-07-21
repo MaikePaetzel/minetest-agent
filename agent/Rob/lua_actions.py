@@ -1,5 +1,11 @@
 #####################_simple_commands_############################
 # executable actions for the bot object
+# stops the bot from doing anything
+lua_stop = """
+move_obj:stop()
+return true
+"""
+
 # starts the mining animation
 lua_mine = """
 move_obj:mine()
@@ -118,6 +124,7 @@ end)
 """
 
 # initializes the bot to look north
+# will need to be formatted
 lua_init_compass = """
 local npc = npcf:get_luaentity("{npc_id}")
 local move_obj = npcf.movement.getControl(npc)
@@ -150,4 +157,15 @@ return npc.object:getpos()
 lua_get_yaw = """
 local npc = npcf:get_luaentity("{npc_id}")
 return npc.object:getyaw()
+"""
+
+# returns true if the bot is currently moving
+# will need to be formatted
+lua_bot_moving = """
+local npc = npcf:get_luaentity("{npc_id}")
+local move_obj = npcf.movement.getControl(npc)
+if not move_obj._path or not move_obj._path[1] then
+    return false
+end
+return true
 """

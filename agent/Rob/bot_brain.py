@@ -74,6 +74,14 @@ class DemoBrain:
     # Complex Behaviours
     #################################################
 
+    def Stop(self):
+        stop_action = aa.AtomicAction(self.bot.lua_runner, self.bot.id, la.lua_stop)
+
+        self.bot.add_action(stop_action)
+        self.bot.start_execution()
+
+    #################################################
+
     def Move(self, direction, distance):
         d = 0
         if direction == "left": # 90° counter-clockwise
@@ -90,12 +98,6 @@ class DemoBrain:
 
         # build the move action
         bot_pos = self.get_bot_position()
-        lua_bot_pos = "{{x={x}, y={y}, z={z}}}".format(
-            x=bot_pos['x'],
-            y=bot_pos['y'],
-            z=bot_pos['z'])
-        move_check = la.lua_move_check.format(target=lua_bot_pos)
-
         lua_target_pos = "{{x={x}, y={y}, z={z}}}".format(
             x=bot_pos['x'] + d_x * distance,
             y=bot_pos['y'],
@@ -105,26 +107,17 @@ class DemoBrain:
         move_action = aa.AtomicAction(
             self.bot.lua_runner,
             self.bot.id,
-            move,
-            60.0,
-            move_check,
-            1.0)
-
-        # build turn action to stay consistent with compass
-        # looking one block further in walking direction
-        lua_look_pos = "{{x={x}, y={y}, z={z}}}".format(
-            x=bot_pos['x'] + d_x * distance + d_x,
-            y=bot_pos['y'],
-            z=bot_pos['z'] + d_z * distance + d_z)
-        turn = la.lua_turn.format(target=lua_look_pos)
-        turn_action = aa.AtomicAction(self.bot.lua_runner, self.bot.id, turn)
-
-        self.bot.add_action(turn_action)
+            move)
+            
         self.bot.add_action(move_action)
         self.bot.start_execution()
 
     #################################################
+
     def Turn(self, direction):
+        if self.run_lua(la.lua_bot_moving.format(npc_id=self.bot.id)):
+            raise Exception('Bot is currently moving and cannot perform a turn')
+
         d = 0
         if direction == "left": # 90° counter-clockwise
             d = -1
@@ -152,6 +145,7 @@ class DemoBrain:
         self.bot.start_execution()
 
     #################################################
+
     def ComeHere(self):
         come = aa.AtomicAction(
             self.bot.lua_runner,
@@ -165,6 +159,7 @@ class DemoBrain:
         self.bot.start_execution()
 
     #################################################
+
     def PlaceBlock(self, type):
         dx, dz = self.orientation_2_deltas(self.orientation.value)
 
@@ -185,6 +180,7 @@ class DemoBrain:
         self.bot.mt.node.set(target_pos, 'default:' + str(type))
 
     #################################################
+    
     def DestroyBlock(self, height=0):
         dx, dz = self.orientation_2_deltas(self.orientation.value)
 
@@ -215,3 +211,4 @@ class DemoBrain:
         time.sleep(0.5)
         self.bot.mt.node.set(target_pos, 'air')
         self.run_lua(la.lua_toggle_mining.format(npc_id=self.bot.id))
+
