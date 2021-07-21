@@ -47,7 +47,6 @@ def orientation_2_deltas(orientation):
     return d_x, d_z
 
 
-
 class LuaRunRef:
     def __init__(self, npc_id, lua_command, max_time=1.0, lua_check=False, check_pause=0.5):
         self.npc_id = npc_id
@@ -241,14 +240,11 @@ class AtomicAction(Task):
             z=bot_pos['z'])
         move_check = la.lua_move_check.format(target=lua_bot_pos)
 
-
-
         lua_target_pos = "{{x={x}, y={y}, z={z}}}".format(
             x=bot_pos['x'] + d_x * move_action.distance or 1,
             y=bot_pos['y'],
             z=bot_pos['z'] + d_z * move_action.distance or 1)
         move = la.lua_move.format(target=lua_target_pos)
-
         move_command = LuaRunRef(npc_id=bot_state.bot_id, lua_command=move, max_time=60.0, lua_check=move_check, check_pause=1.0, )
 
         # build turn action to stay consistent with compass
@@ -262,7 +258,7 @@ class AtomicAction(Task):
         turn = la.lua_turn.format(target=lua_look_pos)
         turn_command = LuaRunRef(npc_id=bot_state.bot_id, lua_command=turn, )
 
-        steps = [move_command, turn_command]
+        steps = [turn_command, move_command]
         return cls(agent=agent, npc_id=bot_state.bot_id, steps=steps)
 
     @classmethod
@@ -288,7 +284,7 @@ class AtomicAction(Task):
             z=bot_pos['z'] + d_z)
 
         turn = la.lua_turn.format(target=lua_target_pos)
-        turn_command = LuaRunRef(npc_id=bot_state.bot_id, lua_command=turn, )
+        turn_command = LuaRunRef(npc_id=bot_state.bot_id, lua_command=turn)
         steps = [turn_command]
         return cls(agent=agent, npc_id=bot_state.bot_id, steps=steps)
 
