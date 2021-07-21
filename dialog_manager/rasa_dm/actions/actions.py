@@ -25,31 +25,36 @@ class BotInstruction:
 @dataclass
 class PlaceBlock(BotInstruction):
     type: str
+    error_message: str
 
 
 @dataclass
 class Move(BotInstruction):
     direction: str
     distance: str
+    error_message: str
+
 
 @dataclass
 class Turn(BotInstruction):
     direction: str
+    error_message: str
 
 
 @dataclass
 class ComeHere(BotInstruction):
-    pass
+    error_message: str
 
 
 @dataclass
 class DestroyBlock(BotInstruction):
     height: str
+    error_message: str
 
 
 @dataclass
 class Stop(BotInstruction):
-    pass
+    error_message: str
 
 
 class ActionSendBotBrain(Action):
@@ -78,7 +83,8 @@ class ActionSendBotBrain(Action):
             request = PlaceBlock(
                 # reference_object_place_block,
                 # repeat_count_place_block,
-                block_type_place_block
+                block_type_place_block,
+                "I think you want me to place a block but some parameters are wrong"
             )
             # when action is started
             self.output_queue.put_nowait(request)
@@ -92,7 +98,7 @@ class ActionSendBotBrain(Action):
         if tracker.get_intent_of_latest_message() == "ask_destroy_block":
             tower_height_destroy_block = tracker.get_slot("tower_height_destroy_block")
 
-            request = DestroyBlock(tower_height_destroy_block)
+            request = DestroyBlock(tower_height_destroy_block, "I think you want me to destroy a block. But some parameters are wrong.")
 
             self.output_queue.put_nowait(request)
 
@@ -113,7 +119,7 @@ class ActionSendBotBrain(Action):
                 except ValueError:
                     pass
 
-            request = Move(relative_direction_move, repeat_count_move)
+            request = Move(relative_direction_move, repeat_count_move, "I think you want me to move somewhere. But some paramaters are wrong.")
 
             self.output_queue.put_nowait(request)
             dispatcher.utter_message(text=f"I'll move {repeat_count_move} blocks {relative_direction_move}")
@@ -128,7 +134,7 @@ class ActionSendBotBrain(Action):
         if tracker.get_intent_of_latest_message() == "ask_turn":
             relative_direction_turn = tracker.get_slot("relative_direction_turn")
 
-            request = Turn(relative_direction_turn)
+            request = Turn(relative_direction_turn, "I think you want me to turn. But something is wrong.")
             self.output_queue.put_nowait(request)
             dispatcher.utter_message(text=f"I'll turn {relative_direction_turn}")
 
@@ -137,17 +143,14 @@ class ActionSendBotBrain(Action):
 
             return [SlotSet("relative_direction_turn", None), SlotSet("repeat_count_turn", None)]
 
-            #return [SlotSet("relative_direction_turn", None), SlotSet("repeat_count_turn", None)]
-            # self.rob.process(request)
-
         if tracker.get_intent_of_latest_message() == "ask_bot_stop_action":
-            self.output_queue.put_nowait(Stop())
+            self.output_queue.put_nowait(Stop("I think you want me to stop. But something is wrong."))
             dispatcher.utter_message(text="I am stopping")
             #else:
             #    dispatcher.utter_message(text="I think you want me to stop but something is wrong. This is what the scientists warned us about.")
 
         if tracker.get_intent_of_latest_message() == "ask_come_here":
-            self.output_queue.put_nowait(ComeHere())
+            self.output_queue.put_nowait(ComeHere("I think you want me to come to you. But something is wrong."))
             dispatcher.utter_message(text="Okay, I'll come to where you are.")
 
         return []

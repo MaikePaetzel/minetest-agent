@@ -20,8 +20,9 @@ import time
 
 
 class Robo(BaseAgent):
-    def __init__(self, action_input_queue: queue.Queue, world: "MinetestWorld"=None, opts=None):
+    def __init__(self, action_input_queue: queue.Queue, retico_output_q: queue.Queue, world: "MinetestWorld"=None, opts=None):
         self.action_input_queue = action_input_queue
+        self.retico_output_queue = retico_output_q
         self.world = world
         self.last_task_memid = None
         self.pos = (0, 0, 0)
@@ -75,6 +76,7 @@ class Robo(BaseAgent):
                         return
                 except:
                     print("droidlet_agent.Robo.controller_step: error handling action from rasa", action)
+                    self.retico_output_queue.put_nowait(action.error_message)
                     return
 
                 print("droidlet_agent.Robo.controller_step: pushing action to task stack", atomic_action)

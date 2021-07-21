@@ -1,5 +1,6 @@
 import argparse
 from multiprocessing import Queue, Process
+import queue
 import time
 import requests
 
@@ -23,7 +24,7 @@ import os
 
 
 
-def run_retico():
+def run_retico(tts_output_q):
     m_asr = GoogleASRModule()
     m_rasa = RasaHTTP()
     m_tts = MozillaTTSHTTP()
@@ -61,7 +62,6 @@ def main():
 
     action_server_to_brain_queue = Queue()
     action_server = get_action_endpoint(action_server_to_brain_queue)
-    robo = Robo(action_server_to_brain_queue)
 
     # run rasa action server
 
@@ -103,14 +103,15 @@ def main():
     # run retico
 
     time.sleep(5)
-    p_retico = Process(target=run_retico, daemon=True)
+    retico_output_q = Queue()
+    p_retico = Process(target=run_retico, daemon=True, args=(retico_output_q,))
     p_retico.start()
     print("run.main: started retico")
 
     # agent running
 
     world = MinetestWorld(server="127.0.0.1", playername="Minehart", password="", port=29999)
-    agent = Robo(action_server_to_brain_queue, world)
+    agent = Robo(action_server_to_brain_queue, retico_output_q, world)
 
     # while loop
 
