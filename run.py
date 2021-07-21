@@ -82,7 +82,7 @@ def main():
         rasa_args.credentials = None
         rasa_args.remote_storage = None
         rasa_args.enable_api = True
-        rasa_args.model = '/home/nrg/potsdam/embagent/minetest-agent/dialog_manager/rasa_dm/models/20210719-133830.tar.gz'
+        rasa_args.model = '/home/nrg/potsdam/embagent/minetest-agent/dialog_manager/rasa_dm/models/20210721-135655.tar.gz'
         rasa.cli.run.run(rasa_args)
 
     p_rasa = Process(target=run_rasa, daemon=True)

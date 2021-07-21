@@ -271,6 +271,8 @@ nlu:
     - okay place a block
     - place block
     - okay place [three]{"entity": "repeat_count_place_block", "value": "3"} [stone](block_type_place_block) blocks and
+    - a [wooden]{"entity": "block_type_place_block", "value": "wood"} block
+    - a [wood](block_type_place_block) block
     - on top of that place another block [left](relative_direction_move) of that
     - a [diamond](block_type_place_block) block
     - [stone](block_type_place_block) and [diamond](block_type_place_block)
