@@ -2,6 +2,7 @@
 # executable actions for the bot object
 # stops the bot from doing anything
 lua_stop = """
+move_obj:mine_stop()
 move_obj:stop()
 return true
 """

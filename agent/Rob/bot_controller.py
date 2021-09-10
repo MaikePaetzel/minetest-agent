@@ -3,7 +3,7 @@ import time
 from enum import Enum
 from concurrent import futures
 import configparser
-import agent.Rob.atomic_actions as aa
+import atomic_actions as aa
 
 class State(Enum):
     NOEXIST = 0
@@ -27,7 +27,7 @@ class BotController:
         self.mt = miney.Minetest(server, playername, password, port)
         self.lua_runner = miney.Lua(self.mt)
 
-        # CONFIG_PATH = '/your/repo/path/minetest-agent/agent/rob/newnpc.conf'
+        CONFIG_PATH = '/Users/Dagobert/Desktop/Repos/minetest-agent/agent/rob/newnpc.conf'
 
         config = configparser.ConfigParser()
         config.read(CONFIG_PATH)
@@ -85,7 +85,7 @@ class BotController:
         
     def start_execution(self):
         assert self.state != State.NOEXIST
-        COMMAND_DELAY = 1.0
+        COMMAND_DELAY = 0.5
         self.state = State.RUNNING
 
         while len(self.action_q) > 0:

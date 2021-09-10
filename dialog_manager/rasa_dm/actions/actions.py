@@ -8,10 +8,10 @@ from word2number import w2n
 
 
 import sys
-# REPO_PATH = '/your/repo/path/minetest-agent/agent/rob'
-
+REPO_PATH = '/Users/Dagobert/Desktop/Repos/minetest-agent/agent/rob'
 sys.path.append(REPO_PATH)
-import bot_brain as b
+import simple_brain as sb
+import advanced_brain as ab
 
 
 class BotInstruction:
@@ -50,7 +50,7 @@ class Stop(BotInstruction):
 class ActionSendBotBrain(Action):
     def __init__(self):
         super().__init__()
-        self.rob = b.DemoBrain()
+        self.rob = sb.SimpleBrain()
 
     def name(self) -> Text:
         return "action_send_bot_brain"
