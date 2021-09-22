@@ -4,6 +4,42 @@ import lua_actions as la
 import time
 import math
 
+
+# Word to number intent
+def text2int(textnum, numwords={}):
+    if not numwords:
+        units = [
+            "zero", "one", "two", "three", "four", "five", "six", "seven", "eight",
+            "nine", "ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen",
+            "sixteen", "seventeen", "eighteen", "nineteen",
+        ]
+
+        tens = ["", "", "twenty", "thirty", "forty",
+                "fifty", "sixty", "seventy", "eighty", "ninety"]
+
+        scales = ["hundred", "thousand", "million", "billion", "trillion"]
+
+        numwords["and"] = (1, 0)
+        for idx, word in enumerate(units):
+            numwords[word] = (1, idx)
+        for idx, word in enumerate(tens):
+            numwords[word] = (1, idx * 10)
+        for idx, word in enumerate(scales):
+            numwords[word] = (10 ** (idx * 3 or 2), 0)
+
+    current = result = 0
+    for word in textnum.split():
+        if word not in numwords:
+            raise Exception("Illegal word: " + word)
+
+        scale, increment = numwords[word]
+        current = current * scale + increment
+        if scale > 100:
+            result += current
+            current = 0
+
+    return result + current
+
 class AdvancedBrain(sb.SimpleBrain):
     def __init__(self, controller=bc.BotController()):
         super().__init__(controller=controller)
@@ -12,30 +48,33 @@ class AdvancedBrain(sb.SimpleBrain):
     # Complex Behaviours
     #################################################
 
-    def PlaceMultipleBlocks(self, type, count):
+    def place_multiple_blocks(self, type, count):
         self.run_lua(la.lua_toggle_mining.format(npc_id=self.bot.id))
         for _ in range(count):
-            self.PlaceBlock(type=type)
+            self.place_block(type=type)
             time.sleep(0.25)
         self.run_lua(la.lua_toggle_mining.format(npc_id=self.bot.id))
         time.sleep(0.25)
 
     #################################################
 
-    def BuildWall(self, width=1, height=2, type='default:stonebrick'):
+    def build_wall(self, width=1, height=2, type='default:stonebrick'):
         if self.run_lua(la.lua_bot_moving.format(npc_id=self.bot.id)):
             raise Exception('Bot is currently moving and cannot build.')
 
-        for i in range(width):
-            self.PlaceMultipleBlocks(type, height)
-            if i < width-1:
-                self.Move(direction='right', distance=1)
+        w = text2int(width)
+        h = text2int(height)
+
+        for i in range(w):
+            self.place_multiple_blocks(type, h)
+            if i < w-1:
+                self.move(direction='right', distance=1)
                 time.sleep(0.25)
-                self.Turn(direction='left')
+                self.turn(direction='left')
             
     #################################################
     
-    def MakeDoor(self):
+    def make_door(self):
         if self.run_lua(la.lua_bot_moving.format(npc_id=self.bot.id)):
             raise Exception('Bot is currently moving and cannot build.')
 
@@ -62,7 +101,7 @@ class AdvancedBrain(sb.SimpleBrain):
         
     #################################################
 
-    def MakeWindow(self):
+    def make_window(self):
         if self.run_lua(la.lua_bot_moving.format(npc_id=self.bot.id)):
             raise Exception('Bot is currently moving and cannot build.')
 
@@ -83,25 +122,25 @@ class AdvancedBrain(sb.SimpleBrain):
         
     #################################################
 
-    def BuildStairs(self, height=2, type='stairs:slab_stone'):
+    def build_stairs(self, height=2, type='stairs:slab_stone'):
         if self.run_lua(la.lua_bot_moving.format(npc_id=self.bot.id)):
             raise Exception('Bot is currently moving and cannot build.')
 
-        for i in range(2*height): # working in half steps
+        for i in range(2 * height): # working in half steps
             j = math.ceil(i / 2)
             if j > 0:
                 self.PlaceMultipleBlocks('default:stonebrick', j)
             if i % 2 == 0:
                 self.run_lua(la.lua_toggle_mining.format(npc_id=self.bot.id))
                 time.sleep(0.25)
-                self.PlaceBlock(type=type)
+                self.place_block(type=type)
                 self.run_lua(la.lua_toggle_mining.format(npc_id=self.bot.id))
-            self.Move(direction='forward', distance=1)
+            self.move(direction='forward', distance=1)
             time.sleep(0.1)
         
     #################################################
 
-    def PlaceRoofTiles(self, type, count):
+    def place_roof_tiles(self, type, count):
         dx, dz = self.orientation_2_deltas(self.orientation.value)
         
         # find the floor block in front of the bot
@@ -122,28 +161,28 @@ class AdvancedBrain(sb.SimpleBrain):
             self.run_lua(la.lua_toggle_mining.format(npc_id=self.bot.id))
             time.sleep(0.1)
 
-    def BuildRoof(self, width=2, height=3, type='default:wood'):
+    def build_roof(self, width=2, height=3, type='default:wood'):
         if self.run_lua(la.lua_bot_moving.format(npc_id=self.bot.id)):
             raise Exception('Bot is currently moving and cannot build.')
 
         for i in range(width):
-            self.PlaceRoofTiles(type, height)
+            self.place_roof_tiles(type, height)
             if i < width-1:
-                self.Move(direction='right', distance=1)
+                self.move(direction='right', distance=1)
                 time.sleep(0.25)
-                self.Turn(direction='left')
+                self.turn(direction='left')
 
     #################################################
 
-    def BuildFloor(self, width=2, type='default:cobble'):
+    def build_floor(self, width=2, type='default:cobble'):
         if self.run_lua(la.lua_bot_moving.format(npc_id=self.bot.id)):
             raise Exception('Bot is currently moving and cannot build.')
 
         for i in range(width):
-            self.DestroyBlock(height=1)
+            self.destroy_block(height=1)
             time.sleep(0.25)
-            self.PlaceBlock(type)
+            self.place_block(type)
             if i < width-1:
-                self.Move(direction='right', distance=1)
+                self.move(direction='right', distance=1)
                 time.sleep(0.25)
-                self.Turn(direction='left')
+                self.turn(direction='left')

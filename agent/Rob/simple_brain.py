@@ -12,7 +12,7 @@ class SimpleBrain(b.Brain):
     # Simple Behaviours
     #################################################
 
-    def Stop(self):
+    def stop(self):
         stop_action = aa.AtomicAction(self.bot.lua_runner, self.bot.id, la.lua_stop)
 
         self.bot.add_action(stop_action)
@@ -20,7 +20,7 @@ class SimpleBrain(b.Brain):
 
     #################################################
 
-    def Move(self, direction, distance):
+    def move(self, direction, distance):
         d = 0
         if direction == "left": # 90° counter-clockwise
             d = -1
@@ -52,7 +52,7 @@ class SimpleBrain(b.Brain):
 
     #################################################
 
-    def Turn(self, direction):
+    def turn(self, direction):
         if self.run_lua(la.lua_bot_moving.format(npc_id=self.bot.id)):
             raise Exception('Bot is currently moving and cannot perform a turn')
 
@@ -84,7 +84,7 @@ class SimpleBrain(b.Brain):
 
     #################################################
 
-    def ComeHere(self):
+    def come_here(self):
         come = aa.AtomicAction(
             self.bot.lua_runner,
             self.bot.id,
@@ -98,7 +98,7 @@ class SimpleBrain(b.Brain):
 
     #################################################
 
-    def PlaceBlock(self, type):
+    def place_block(self, type):
         dx, dz = self.orientation_2_deltas(self.orientation.value)
         
         SEA_LEVEL = 6.5
@@ -123,7 +123,7 @@ class SimpleBrain(b.Brain):
 
     #################################################
     
-    def DestroyBlock(self, height=0):
+    def destroy_block(self, height=0):
         dx, dz = self.orientation_2_deltas(self.orientation.value)
 
         # find floor block in front of bot
@@ -149,3 +149,4 @@ class SimpleBrain(b.Brain):
         time.sleep(0.25)
         self.bot.mt.node.set(target_pos, 'air')
         self.run_lua(la.lua_toggle_mining.format(npc_id=self.bot.id))
+        
