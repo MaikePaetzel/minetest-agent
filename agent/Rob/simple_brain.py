@@ -59,6 +59,7 @@ class SimpleBrain(b.Brain):
 
     def stop(self):
         stop_action = aa.AtomicAction(self.bot.lua_runner, self.bot.id, la.lua_stop)
+        print('Ok I will stop.')
 
         self.bot.add_action(stop_action)
         self.bot.start_execution()
@@ -74,7 +75,6 @@ class SimpleBrain(b.Brain):
         elif direction == "backward": # 180° clockwise
             d = 2
 
-        print('distance', distance)
         distance = text2int(distance)
         # update the brains orientation and get deltas
         new_orientation = (self.orientation.value + d) % 4
@@ -100,9 +100,7 @@ class SimpleBrain(b.Brain):
     #################################################
 
     def turn(self, direction):
-        if self.run_lua(la.lua_bot_moving.format(npc_id=self.bot.id)):
-            raise Exception('Bot is currently moving and cannot perform a turn')
-
+        
         d = 0
         if direction == "left": # 90° counter-clockwise
             d = -1
@@ -170,9 +168,10 @@ class SimpleBrain(b.Brain):
 
     #################################################
     
-    def destroy_block(self, height=0):
+    def destroy_block(self, height):
         dx, dz = self.orientation_2_deltas(self.orientation.value)
 
+        height = text2int(height)
         # find floor block in front of bot
         SEA_LEVEL = 6.5
         bot_pos = self.get_bot_position()

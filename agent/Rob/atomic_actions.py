@@ -56,8 +56,8 @@ local move_obj = npcf.movement.getControl(npc)
         """
         Sends this lua snippet to be executed ingame
         """
-        print(self.lua_check)
-        print(f"Commencing result checks at {datetime.datetime.now()}")
+        #print(self.lua_check)
+        #print(f"Commencing result checks at {datetime.datetime.now()}")
         result = None
         while not result:
             try:
@@ -65,7 +65,7 @@ local move_obj = npcf.movement.getControl(npc)
             except miney.LuaResultTimeout:
                 log.exception(f"Result check timed out after {self.max_time}s at {datetime.datetime.now()}")
                 return 3
-            print(f"Check produced: {result}")
+            #print(f"Check produced: {result}")
             if result != 0:
                 return result
             time.sleep(self.check_pause)
@@ -74,14 +74,14 @@ local move_obj = npcf.movement.getControl(npc)
         """
         Sends this lua snippet to be executed ingame
         """
-        print(self.lua_command)
-        print(f"Attempting execution at {datetime.datetime.now()}")
+        #print(self.lua_command)
+        #print(f"Attempting execution at {datetime.datetime.now()}")
         try:
              self.lua_runner.run(self.lua_command, timeout=self.max_time if self.max_time > 0 else None)
         except miney.LuaResultTimeout:
             log.exception(f"Execution timed out after {self.max_time}s at {datetime.datetime.now()}")
             return False
-        print(f"Finished execution at {datetime.datetime.now()}")
+        #print(f"Finished execution at {datetime.datetime.now()}")
         return True
 
     def __call__(self):

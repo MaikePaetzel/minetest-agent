@@ -43,7 +43,7 @@ class DialogueManager:
         request = intent.name + '('
         if intent.has_parameters:
             for i, p in enumerate(intent.parameters):
-                print(p.name)
+                #print(p.name)
                 param = p.find_parameter(s)
                 if param != None:
                     value = '\'' + param  + '\''
@@ -51,7 +51,7 @@ class DialogueManager:
                     if i + 1 < len(intent.parameters):
                         request += ', '
         request += ')'
-        print('Executing ' + request + ' with parameter(s):')
+        print('Executing ' + request)
         ROB.process(request)
 
     def init_console(self, learning=True):
@@ -64,7 +64,7 @@ class DialogueManager:
             if sim >= 0.85:
                 self.execute_intent(intent, input_s)
             else:
-                print(all_sim)
+                #print(all_sim)
                 if sum((np.array(all_sim) > 0.65)) == 1 and sim < 0.85:
                     if sim > 0.75:
 
@@ -93,7 +93,7 @@ class DialogueManager:
                 else:
                     if sum(np.array(all_sim) > 0.65) > 1:
                         print(
-                            'The request is too ambiguous, did you wanted to say something similar to : ')
+                            'The request is too ambiguous, did you want to say something similar to:')
                         print(intent.example[0] + '?')
                         confirmation = input('(YES/NO)\n')
                         if confirmation.upper() == 'YES':
@@ -193,7 +193,7 @@ class ParametersFinder:
 
                             mem = cosine_similarity(
                                 [MODEL.encode(w)], [MODEL.encode(exw)])
-                            print(mem)
+                            #print(mem)
                             if max_sim < mem[0]:
                                 max_sim = mem[0]
                                 slot_filler = exw
@@ -211,7 +211,7 @@ class ParametersFinder:
 
                             mem = cosine_similarity(
                                 [MODEL.encode(w)], [MODEL.encode(exw)])
-                            print(mem)
+                            #print(mem)
                             if max_sim < mem[0]:
                                 max_sim = mem[0]
                                 slot_filler = exw
@@ -224,6 +224,33 @@ class ParametersFinder:
         else:
             new_s = input(self.question + '\n')
             return self.find_parameter(new_s, k=k+1)
+
+stop = Intent('stop', [
+                     'Stop',
+                     'Can you stop please?',
+                     'Could you please stop?',
+                     'Hold on',
+                     'Wait',
+                     'Dont do that',
+                     'Please stop',
+                     'Please wait', 
+                     'Please hold on'
+                     ], None)
+
+
+help = Intent('help', [
+                     'I need some help',
+                     'Can you please tell me what you can do?',
+                     'What can you do?',
+                     'Help please',
+                     'Help',
+                     'Tell me what you can do',
+                     'What can you help me with?',
+                     'give me some information',
+                     'what do you know?',
+                     'which commands do you know?'
+                     'which commands do you have?'
+                     ], None)
 
 
 place_block = Intent('place_block', [
@@ -257,12 +284,11 @@ stone = Intent('default:cobble', [
     None
 )
 
-block_type = ParametersFinder('block_type', 'Can you specify the block type?')
-block_type.add_intent(wood)
-block_type.add_intent(dirt)
-block_type.add_intent(stone)
-place_block.add_parameter(block_type)
-
+type = ParametersFinder('type', 'Can you specify the block type?')
+type.add_intent(wood)
+type.add_intent(dirt)
+type.add_intent(stone)
+place_block.add_parameter(type)
 
 distance = ParametersFinder(
     'number', 'Can you specify the distance?', finding_slot=True)
@@ -278,19 +304,17 @@ distance.add_intent(distance_i)
 
 # Turn intent
 turn = Intent('turn', [
+    'Turn around please',
     'Can you turn?',
     'Turn to a direction',
     'Turn left',
     'Turn right',
     'Turn backward',
-    'Can you change your direction to left',
-    'Can you change your direction to right',
+    'Can you look that way',
+    'Can you look',
     'Could you turn right?'
     'Could you turn left?',
-    'Could you go backward?',
-    'go forward please',
-    'can you go forward please',
-    'can you move forward for 3 block please',
+    'Could you turn around?',
 
 ], None, 'I would like you to confirm that you asked me to change my direction?')
 
@@ -315,7 +339,7 @@ backward = Intent('backward', [
     'go backward'
 ], None)
 
-backward = Intent('forward', [
+forward = Intent('forward', [
     'forward',
     'go forward for 3 block',
     'can you go forward please'
@@ -325,17 +349,19 @@ backward = Intent('forward', [
 direction.add_intent(left)
 direction.add_intent(right)
 direction.add_intent(backward)
+direction.add_intent(forward)
 turn.add_parameter(direction)
 
 # Move intent
 
 move = Intent('move', [
-    'Can you move left for 5 blocks',
-    'Can you move right for 1 block',
-    'Can you move forward for 3 blocks',
+    'Move',
+    'walk',
+    'can you walk please',
+    'walk to the',
+    'walk forward',
     'Can you move',
     'Move five block forward',
-    'Move',
     'Go forward',
     'Go',
     'Go forward',
@@ -347,7 +373,6 @@ move = Intent('move', [
 
 move.add_parameter(direction)
 move.add_parameter(distance)
-
 
 # Build wall intent
 
@@ -389,20 +414,23 @@ build_wall = Intent('build_wall', [
 
 build_wall.add_parameter(width_parameter)
 build_wall.add_parameter(height_parameter)
-build_wall.add_parameter(block_type)
+build_wall.add_parameter(type)
 
 
-# Make door Intent
 place_stairs = Intent('build_stairs', [
                       'place stairs',
                       'build stairs',
                       'Place a stair tile please',
                        'Could you please place some stair?'], None)
 
-place_stairs.add_parameter(block_type)
 place_stairs.add_parameter(height_parameter)
 
+# Make window Intent
+place_window = Intent('make_window', [
+                    'Place a window', 'can you please make a window', 'A window here please', 'make a window please'], None)
 
+
+# Make door Intent
 place_door = Intent('make_door', [
                     'Place a door', 'can you please place a door', 'A door here please', 'place one door please'], None)
 
@@ -427,7 +455,7 @@ build_roof = Intent('build_roof', [
 
 build_roof.add_parameter(height_parameter)
 build_roof.add_parameter(width_parameter)
-build_roof.add_parameter(block_type)
+build_roof.add_parameter(type)
 
 
 build_floor = Intent('build_floor', [
@@ -445,12 +473,27 @@ build_floor = Intent('build_floor', [
 ], None, 'You asked me to build a floor, right? ')
 
 build_floor.add_parameter(width_parameter)
-build_floor.add_parameter(block_type)
+build_floor.add_parameter(type)
 
+destroy_block = Intent('destroy_block', [
+                     'Destroy a block',
+                     'Can you destroy a block please?', 
+                     'Could you remove a block?',
+                     'destroy that block',
+                     'take away that block',
+                     'remove this again',
+                     'destroy the block at height five',
+                     'destroy the fourth block'
+                     ], None)
+
+destroy_block.add_parameter(height_parameter)
 
 d = DialogueManager()
 
+d.add_intent(stop)
+d.add_intent(help)
 d.add_intent(place_block)
+d.add_intent(destroy_block)
 d.add_intent(place_stairs)
 d.add_intent(place_door)
 d.add_intent(greetings)

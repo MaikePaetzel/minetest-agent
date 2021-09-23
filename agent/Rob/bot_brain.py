@@ -29,7 +29,6 @@ class Brain:
         will be executed first.
         """
         try:
-            print("Attempting to execute command:")
             exec("self." + str(request))
             return True
         except Exception as e:

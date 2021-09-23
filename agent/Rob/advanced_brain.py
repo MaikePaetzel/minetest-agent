@@ -65,9 +65,7 @@ class AdvancedBrain(sb.SimpleBrain):
     #################################################
 
     def build_wall(self, width=1, height=2, type='default:stonebrick'):
-        if self.run_lua(la.lua_bot_moving.format(npc_id=self.bot.id)):
-            raise Exception('Bot is currently moving and cannot build.')
-
+        
         w = text2int(width)
         h = text2int(height)
 
@@ -80,13 +78,20 @@ class AdvancedBrain(sb.SimpleBrain):
             
     #################################################
 
+    def help(self):
+        print("""I can help you with the following things:
+- placing/destroying blocks
+- building walls
+- making doors or windows in walls
+- building stairs
+- building a roof
+- building a floor
+        """)
 
     def greeting(self):
         print('Hello, I\'m Rob :)')
     
     def make_door(self):
-        if self.run_lua(la.lua_bot_moving.format(npc_id=self.bot.id)):
-            raise Exception('Bot is currently moving and cannot build.')
 
         dx, dz = self.orientation_2_deltas(self.orientation.value)
 
@@ -112,9 +117,7 @@ class AdvancedBrain(sb.SimpleBrain):
     #################################################
 
     def make_window(self):
-        if self.run_lua(la.lua_bot_moving.format(npc_id=self.bot.id)):
-            raise Exception('Bot is currently moving and cannot build.')
-
+        
         dx, dz = self.orientation_2_deltas(self.orientation.value)
 
         # find the floor block in front of the bot
@@ -132,11 +135,8 @@ class AdvancedBrain(sb.SimpleBrain):
         
     #################################################
 
-    def build_stairs(self, type='stairs:slab_stone',height=2):
-        if self.run_lua(la.lua_bot_moving.format(npc_id=self.bot.id)):
-            raise Exception('Bot is currently moving and cannot build.')
-
-        print(height,type)
+    def build_stairs(self, height=2):
+        type='stairs:slab_stone'
         height = text2int(height)
 
         for i in range(2 * height): # working in half steps
@@ -175,13 +175,9 @@ class AdvancedBrain(sb.SimpleBrain):
             time.sleep(0.1)
 
     def build_roof(self, width=2, height=3, type='default:wood'):
-        if self.run_lua(la.lua_bot_moving.format(npc_id=self.bot.id)):
-            raise Exception('Bot is currently moving and cannot build.')
-
+        
         width = text2int(width)
         height = text2int(height)
-
-
 
         for i in range(width):
             self.place_roof_tiles(type, height)
@@ -193,13 +189,9 @@ class AdvancedBrain(sb.SimpleBrain):
     #################################################
 
     def build_floor(self, width=2, type='default:cobble'):
-        if self.run_lua(la.lua_bot_moving.format(npc_id=self.bot.id)):
-            raise Exception('Bot is currently moving and cannot build.')
-
 
         width = text2int(width)
         
-
         for i in range(width):
             self.destroy_block(height=1)
             time.sleep(0.25)
