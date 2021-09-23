@@ -4,6 +4,51 @@ import bot_controller as bc
 import lua_actions as la
 import time
 
+
+def text2int(textnum, numwords={}):
+
+    try:
+        ret = int(textnum)
+        return ret
+    except:
+
+        if not numwords:
+            units = [
+                "zero", "one", "two", "three", "four", "five", "six", "seven", "eight",
+                "nine", "ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen",
+                "sixteen", "seventeen", "eighteen", "nineteen",
+            ]
+
+            tens = ["", "", "twenty", "thirty", "forty",
+                    "fifty", "sixty", "seventy", "eighty", "ninety"]
+
+            scales = ["hundred", "thousand", "million", "billion", "trillion"]
+
+            numwords["and"] = (1, 0)
+            for idx, word in enumerate(units):
+                numwords[word] = (1, idx)
+            for idx, word in enumerate(tens):
+                numwords[word] = (1, idx * 10)
+            for idx, word in enumerate(scales):
+                numwords[word] = (10 ** (idx * 3 or 2), 0)
+
+        current = result = 0
+        for word in textnum.split():
+            if word not in numwords:
+                raise Exception("Illegal word: " + word)
+
+            scale, increment = numwords[word]
+            current = current * scale + increment
+            if scale > 100:
+                result += current
+                current = 0
+
+        return result + current
+
+
+
+
+
 class SimpleBrain(b.Brain):
     def __init__(self, controller=bc.BotController()):
         super().__init__(controller=controller)
@@ -29,6 +74,8 @@ class SimpleBrain(b.Brain):
         elif direction == "backward": # 180° clockwise
             d = 2
 
+        print('distance', distance)
+        distance = text2int(distance)
         # update the brains orientation and get deltas
         new_orientation = (self.orientation.value + d) % 4
         self.orientation = self.Compass(new_orientation)

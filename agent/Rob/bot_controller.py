@@ -4,6 +4,7 @@ from enum import Enum
 from concurrent import futures
 import configparser
 import atomic_actions as aa
+import os
 
 class State(Enum):
     NOEXIST = 0
@@ -27,9 +28,14 @@ class BotController:
         self.mt = miney.Minetest(server, playername, password, port)
         self.lua_runner = miney.Lua(self.mt)
 
-        CONFIG_PATH = '/Users/Dagobert/Desktop/Repos/minetest-agent/agent/rob/newnpc.conf'
+        # CONFIG_PATH = '/Users/Dagobert/Desktop/Repos/minetest-agent/agent/rob/newnpc.conf'
+        # print(os.getcwd() )
+        CONFIG_PATH = 'agent/Rob/newnpc.conf'
+
 
         config = configparser.ConfigParser()
+        print(config.sections())
+
         config.read(CONFIG_PATH)
         config = config['NPC']
 

@@ -43,10 +43,13 @@ class DialogueManager:
         request = intent.name + '('
         if intent.has_parameters:
             for i, p in enumerate(intent.parameters):
-                value = '\'' + p.find_parameter(s) + '\''
-                request += value
-                if i + 1 < len(intent.parameters):
-                    request += ', '
+                print(p.name)
+                param = p.find_parameter(s)
+                if param != None:
+                    value = '\'' + param  + '\''
+                    request += value
+                    if i + 1 < len(intent.parameters):
+                        request += ', '
         request += ')'
         print('Executing ' + request + ' with parameter(s):')
         ROB.process(request)
@@ -152,6 +155,7 @@ class ParametersFinder:
         self.finding_slot = finding_slot
         self.force_question = force_question
         self.raw_answer_as_parameter = raw_answer_as_parameter
+        self.name = name
 
     def add_intent(self, i):
         self.intents.append(i)
@@ -264,7 +268,7 @@ distance = ParametersFinder(
     'number', 'Can you specify the distance?', finding_slot=True)
 
 distance_i = Intent('distance', [
-    'Number', 'amount', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten'
+    '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten'
 ],
     None
 )
@@ -283,7 +287,11 @@ turn = Intent('turn', [
     'Can you change your direction to right',
     'Could you turn right?'
     'Could you turn left?',
-    'Could you go backward?'
+    'Could you go backward?',
+    'go forward please',
+    'can you go forward please',
+    'can you move forward for 3 block please',
+
 ], None, 'I would like you to confirm that you asked me to change my direction?')
 
 
@@ -305,6 +313,12 @@ backward = Intent('backward', [
     'backward',
     'turn backward',
     'go backward'
+], None)
+
+backward = Intent('forward', [
+    'forward',
+    'go forward for 3 block',
+    'can you go forward please'
 ], None)
 
 
@@ -380,10 +394,13 @@ build_wall.add_parameter(block_type)
 
 # Make door Intent
 place_stairs = Intent('build_stairs', [
-                      'place stairs', 'Place a stair tile please', 'Could you please place some stair?'], None)
+                      'place stairs',
+                      'build stairs',
+                      'Place a stair tile please',
+                       'Could you please place some stair?'], None)
 
 place_stairs.add_parameter(block_type)
-place_stairs.add_parameter(height)
+place_stairs.add_parameter(height_parameter)
 
 
 place_door = Intent('make_door', [

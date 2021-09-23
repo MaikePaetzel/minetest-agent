@@ -7,38 +7,44 @@ import math
 
 # Word to number intent
 def text2int(textnum, numwords={}):
-    if not numwords:
-        units = [
-            "zero", "one", "two", "three", "four", "five", "six", "seven", "eight",
-            "nine", "ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen",
-            "sixteen", "seventeen", "eighteen", "nineteen",
-        ]
 
-        tens = ["", "", "twenty", "thirty", "forty",
-                "fifty", "sixty", "seventy", "eighty", "ninety"]
+    try:
+        ret = int(textnum)
+        return ret
+    except:
 
-        scales = ["hundred", "thousand", "million", "billion", "trillion"]
+        if not numwords:
+            units = [
+                "zero", "one", "two", "three", "four", "five", "six", "seven", "eight",
+                "nine", "ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen",
+                "sixteen", "seventeen", "eighteen", "nineteen",
+            ]
 
-        numwords["and"] = (1, 0)
-        for idx, word in enumerate(units):
-            numwords[word] = (1, idx)
-        for idx, word in enumerate(tens):
-            numwords[word] = (1, idx * 10)
-        for idx, word in enumerate(scales):
-            numwords[word] = (10 ** (idx * 3 or 2), 0)
+            tens = ["", "", "twenty", "thirty", "forty",
+                    "fifty", "sixty", "seventy", "eighty", "ninety"]
 
-    current = result = 0
-    for word in textnum.split():
-        if word not in numwords:
-            raise Exception("Illegal word: " + word)
+            scales = ["hundred", "thousand", "million", "billion", "trillion"]
 
-        scale, increment = numwords[word]
-        current = current * scale + increment
-        if scale > 100:
-            result += current
-            current = 0
+            numwords["and"] = (1, 0)
+            for idx, word in enumerate(units):
+                numwords[word] = (1, idx)
+            for idx, word in enumerate(tens):
+                numwords[word] = (1, idx * 10)
+            for idx, word in enumerate(scales):
+                numwords[word] = (10 ** (idx * 3 or 2), 0)
 
-    return result + current
+        current = result = 0
+        for word in textnum.split():
+            if word not in numwords:
+                raise Exception("Illegal word: " + word)
+
+            scale, increment = numwords[word]
+            current = current * scale + increment
+            if scale > 100:
+                result += current
+                current = 0
+
+        return result + current
 
 class AdvancedBrain(sb.SimpleBrain):
     def __init__(self, controller=bc.BotController()):
@@ -73,6 +79,10 @@ class AdvancedBrain(sb.SimpleBrain):
                 self.turn(direction='left')
             
     #################################################
+
+
+    def greeting(self):
+        print('Hello, I\'m Rob :)')
     
     def make_door(self):
         if self.run_lua(la.lua_bot_moving.format(npc_id=self.bot.id)):
@@ -122,14 +132,17 @@ class AdvancedBrain(sb.SimpleBrain):
         
     #################################################
 
-    def build_stairs(self, height=2, type='stairs:slab_stone'):
+    def build_stairs(self, type='stairs:slab_stone',height=2):
         if self.run_lua(la.lua_bot_moving.format(npc_id=self.bot.id)):
             raise Exception('Bot is currently moving and cannot build.')
+
+        print(height,type)
+        height = text2int(height)
 
         for i in range(2 * height): # working in half steps
             j = math.ceil(i / 2)
             if j > 0:
-                self.PlaceMultipleBlocks('default:stonebrick', j)
+                self.place_multiple_blocks('default:stonebrick', j)
             if i % 2 == 0:
                 self.run_lua(la.lua_toggle_mining.format(npc_id=self.bot.id))
                 time.sleep(0.25)
@@ -165,6 +178,11 @@ class AdvancedBrain(sb.SimpleBrain):
         if self.run_lua(la.lua_bot_moving.format(npc_id=self.bot.id)):
             raise Exception('Bot is currently moving and cannot build.')
 
+        width = text2int(width)
+        height = text2int(height)
+
+
+
         for i in range(width):
             self.place_roof_tiles(type, height)
             if i < width-1:
@@ -177,6 +195,10 @@ class AdvancedBrain(sb.SimpleBrain):
     def build_floor(self, width=2, type='default:cobble'):
         if self.run_lua(la.lua_bot_moving.format(npc_id=self.bot.id)):
             raise Exception('Bot is currently moving and cannot build.')
+
+
+        width = text2int(width)
+        
 
         for i in range(width):
             self.destroy_block(height=1)
